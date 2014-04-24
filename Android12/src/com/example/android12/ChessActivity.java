@@ -16,7 +16,7 @@ public class ChessActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chess);
+        setContentView(R.layout.fragment_chess);
         GridLayout chessBoardView = (GridLayout)this.findViewById(R.id.chessboard);
         int cols = chessBoardView.getColumnCount();
         int rows = chessBoardView.getRowCount();
@@ -24,7 +24,7 @@ public class ChessActivity extends ActionBarActivity {
         int sDim = width / 8;
         for(int i = 0; i < rows; i++) {
         	for(int j = 0; j < cols; j++) {
-        		Button square = new Button(null);
+        		Button square = new Button(this);
         		square.setWidth(sDim);
         		square.setHeight(sDim);
         		chessBoardView.addView(square);
