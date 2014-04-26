@@ -1,0 +1,18 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.android12.ChessActivity$PlaceholderFragment" >
+
+   	<GridLayout
+        android:id="@+id/chessboard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:columnCount="8"
+        android:orientation="horizontal"
+        android:rowCount="8" ">
+   	
+   	
+   	
+ 	</GridLayout>
+</RelativeLayout>

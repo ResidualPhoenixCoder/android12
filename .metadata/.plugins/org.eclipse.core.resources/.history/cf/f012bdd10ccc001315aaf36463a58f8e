@@ -1,0 +1,72 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.android12.ChessActivity$PlaceholderFragment" >
+
+   	<GridLayout
+        android:id="@+id/chessboard"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:columnCount="8"     
+        android:rowCount="8" 
+        android:orientation="horizontal"/>
+
+   	<TableLayout
+   	    android:id="@+id/chess"
+   	    android:layout_width="wrap_content"
+   	    android:layout_height="wrap_content"
+   	    android:layout_below="@+id/chessboard"
+   	    android:layout_centerHorizontal="true"
+   	    android:layout_marginTop="62dp" >
+
+   	    <TableRow
+   	        android:id="@+id/tableRow1"
+   	        android:layout_width="wrap_content"
+   	        android:layout_height="wrap_content" >
+   	    </TableRow>
+
+   	    <TableRow
+   	        android:id="@+id/tableRow2"
+   	        android:layout_width="wrap_content"
+   	        android:layout_height="wrap_content" >
+   	    </TableRow>
+
+   	    <TableRow
+   	        android:id="@+id/tableRow3"
+   	        android:layout_width="wrap_content"
+   	        android:layout_height="wrap_content" >
+   	    </TableRow>
+
+   	    <TableRow
+   	        android:id="@+id/tableRow4"
+   	        android:layout_width="wrap_content"
+   	        android:layout_height="wrap_content" >
+   	    </TableRow>
+   	    
+   	    <TableRow
+   	        android:id="@+id/tableRow5"
+   	        android:layout_width="wrap_content"
+   	        android:layout_height="wrap_content" >
+   	    </TableRow>
+   	    
+   	    <TableRow
+   	        android:id="@+id/tableRow6"
+   	        android:layout_width="wrap_content"
+   	        android:layout_height="wrap_content" >
+   	    </TableRow>
+   	    
+   	    <TableRow
+   	        android:id="@+id/tableRow7"
+   	        android:layout_width="wrap_content"
+   	        android:layout_height="wrap_content" >
+   	    </TableRow>
+   	    
+   	    <TableRow
+   	        android:id="@+id/tableRow8"
+   	        android:layout_width="wrap_content"
+   	        android:layout_height="wrap_content" >
+   	    </TableRow>
+   	</TableLayout>
+
+</RelativeLayout>

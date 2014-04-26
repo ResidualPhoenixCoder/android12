@@ -2,14 +2,22 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.android12.ChessActivity$PlaceholderFragment" >
+    tools:context="com.example.android12.ChessActivity$PlaceholderFragment" 
+    android:id="@+id/main"
+    android:gravity="center_horizontal"
+    >
 
    	<GridLayout
         android:id="@+id/chessboard"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:columnCount="8"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:orientation="horizontal"
-        android:rowCount="8" />
+        
+        >
+   
+   	    
+   	    </GridLayout>
+   	
+   	
 
 </RelativeLayout>
