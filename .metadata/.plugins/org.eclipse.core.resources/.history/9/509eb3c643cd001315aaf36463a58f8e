@@ -1,0 +1,107 @@
+package com.example.android12;
+
+import java.util.ArrayList;
+
+import android.graphics.Color;
+import android.graphics.Point;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBarActivity;
+import android.view.Display;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.GridLayout;
+import android.widget.ImageButton;
+import android.widget.TableLayout;
+import android.widget.GridLayout.LayoutParams;
+
+public class ChessActivity extends ActionBarActivity {
+	
+	private ArrayList<Button> squares  = new ArrayList<Button>();
+	
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.fragment_chess);
+        GridLayout chessBoardView = (GridLayout)this.findViewById(R.id.chessboard);
+        GridLayout.LayoutParams viewparam =new GridLayout.LayoutParams();
+//        chessBoardView.setLayoutParams(viewparam);
+        chessBoardView.setColumnCount(8);
+        chessBoardView.setRowCount(8);
+        int d = chessBoardView.getWidth();
+
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        int width = size.x;
+        for(int i = 0; i < 8; i++) {
+        	for(int j = 0; j < 8; j++) {
+        		Button square = new Button(this);
+        		squares.add(square);
+        		if((i+j)%2==0){
+//        			square.setBackgroundColor(Color.LTGRAY);
+        		}
+        		else{
+//        			square.setBackgroundColor(Color.DKGRAY);
+        		}
+                GridLayout.LayoutParams param =new GridLayout.LayoutParams();
+                param.rowSpec = GridLayout.spec(i);
+                param.columnSpec = GridLayout.spec(j);
+                param.setMargins(-7, -3, -5, -9);
+                param.width = width/7;
+                param.height = param.width;
+//        		param.columnSpec = GridLayout.spec(j);
+//        		param.rowSpec = GridLayout.spec(i);
+        		square.setLayoutParams(param);
+        		chessBoardView.addView(square);
+        	}
+        }
+        
+        
+        
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.chess, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        if (id == R.id.action_settings) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * A placeholder fragment containing a simple view.
+     */
+    public static class PlaceholderFragment extends Fragment {
+
+        public PlaceholderFragment() {
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                Bundle savedInstanceState) {
+            View rootView = inflater.inflate(R.layout.fragment_chess, container, false);
+            return rootView;
+        }
+    }
+
+}
