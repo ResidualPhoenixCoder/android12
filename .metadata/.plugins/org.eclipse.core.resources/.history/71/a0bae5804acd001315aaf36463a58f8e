@@ -29,8 +29,8 @@ public class ChessActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_chess);
         GridLayout chessBoardView = (GridLayout)this.findViewById(R.id.chessboard);
-        chessBoardView.setColumnCount(8);
-        chessBoardView.setRowCount(8);
+        chessBoardView.setColumnCount(9);
+        chessBoardView.setRowCount(9);
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
@@ -41,6 +41,19 @@ public class ChessActivity extends ActionBarActivity {
         }
         for(int i = 0; i < 8; i++) {
         	for(int j = 0; j < 8; j++) {
+        		if(i==8 || j==8){
+            		ImageButton square = new ImageButton(this);
+        			square.setBackgroundColor(Color.WHITE);
+        		  GridLayout.LayoutParams param =new GridLayout.LayoutParams();
+                  param.rowSpec = GridLayout.spec(i);
+                  param.columnSpec = GridLayout.spec(j);
+                  param.setMargins(-7, -3, -5, -9);
+                  param.width = width/8;
+                  param.height = param.width;
+          		square.setLayoutParams(param);
+          			chessBoardView.addView(square);
+        		}
+        		else{
 
               			ImageButton square = new ImageButton(this);
                 		squares.add(square);
@@ -58,7 +71,7 @@ public class ChessActivity extends ActionBarActivity {
                         param.height = param.width;
                 		square.setLayoutParams(param);
                 		chessBoardView.addView(square);
-        		
+        		}
         
         	}
         }
