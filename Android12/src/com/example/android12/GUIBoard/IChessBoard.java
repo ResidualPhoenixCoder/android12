@@ -111,9 +111,18 @@ public interface IChessBoard {
 	public void enableResign();
 	
 	/**
-	 * Returns the GUI to its original state.  This is
-	 * normally a combination of the other commands in this
-	 * interface. 
+	 * Returns all GUI elements except for the board back to its original state.  This is normally used
+	 * for between state moves.
+	 * 
+	 * This is normally a combination of the other enabler/disabler commands in this interface. 
+	 */
+	public void setDefaultAuxControlState();
+	
+	/**
+	 * Returns all GUI elements including the board back to its original state.  This is normally used for
+	 * rendering a new game.
+	 * 
+	 * This is normally a combination of the other enabler/disabler commands in this interface. 
 	 */
 	public void setDefaultState();
 }
