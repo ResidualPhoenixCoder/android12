@@ -33,8 +33,38 @@ public class GUIChessBoard extends View implements IChessBoard {
 		GridLayout chessBoardView = (GridLayout)activity.findViewById(R.id.chessboard);
 		chessBoardView.setColumnCount(8);
         chessBoardView.setRowCount(8);
-
-		//test code for now
+     /*   Display display =activity.getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        int width = size.x;
+        int height = size.y;
+        if(width>height){
+        	width = height;
+        }
+        for(int i = 0; i < 8; i++) {
+        	for(int j = 0; j < 8; j++) {
+        				
+//        		String pce = b.board[i][j];
+        		String pos = board.let[j]+i;
+        		ImageButton square = new ImageButton(context);
+        		
+        		if((i+j)%2==0){
+        			square.setBackgroundColor(Color.LTGRAY);
+        		}
+        		else{
+        			square.setBackgroundColor(Color.DKGRAY);
+        		}
+        		GridLayout.LayoutParams param =new GridLayout.LayoutParams();
+        		param.rowSpec = GridLayout.spec(i);
+        		param.columnSpec = GridLayout.spec(j);
+        		param.width = width/8;
+        		param.height = param.width;
+        		square.setLayoutParams(param);
+        		chessBoardView.addView(square);
+        
+        	}
+        }*/
+		
 		board b = new board();
 		Draw(b);
 		ChessControl cc = new ChessControl(b, this);
@@ -98,9 +128,9 @@ public class GUIChessBoard extends View implements IChessBoard {
 				Square sq = new Square(parent, p, pos);
 //				Button sq = new Button(parent);
 
-//				if(p!=null){
-//					sq.setText(sq.toString());
-//				}
+				if(p!=null){
+					sq.setText(sq.toString());
+				}
 				GridLayout.LayoutParams param =new GridLayout.LayoutParams();
 //        		param.rowSpec = GridLayout.spec(i);
 //        		param.columnSpec = GridLayout.spec(j);
@@ -119,16 +149,35 @@ public class GUIChessBoard extends View implements IChessBoard {
 
 	@Override
 	public void reDraw(board b) {
-		// TODO redraw the board when a piece moves
-		/*
-		 * 
-		 * PSEUDOCODE
-		 * Check each square with the txt representation of the board. 
-		 * If there is a difference, redraw the image.
-		 * 
-		 * 
-		 * 
-		 */
+		// TODO Auto-generated method stub
+		String[][] txtBoard = b.board;
+		Toast.makeText(parent, ""+b.getMoveCtr(), 
+				   Toast.LENGTH_LONG).show();
+		for(int i = txtBoard.length-1;i>-1;i--){
+			for(int j = 0; j<txtBoard[0].length;j++){
+				if(!txtBoard[i][j].equals(squares[i][j].toString())){
+					String pos = board.let[j]+(i+1);
+					Piece p = null;
+					for(Piece pce:b.WhiteP){
+						if(pce.getPos().equals(pos)){
+							p = pce;
+						}
+					}
+					if(p==null){
+						for(Piece pce:b.BlackP){
+							if(pce.getPos().equals(pos)){
+								p = pce;
+							}
+						}
+					}
+					squares[i][j].setPiece(p);
+					squares[i][j].setText(squares[i][j].toString());
+					
+					
+				}
+			}
+
+		}
 	}
 
 	@Override

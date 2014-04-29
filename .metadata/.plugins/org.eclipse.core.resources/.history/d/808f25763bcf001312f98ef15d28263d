@@ -101,19 +101,19 @@ public class ChessControl {
 		boolean draw = false;
 		boolean piecehere = false;
 		String s = startPos+" "+endPos;
-		//first checks person agrees to draw that has been offered.
+
 		if(draw&&s.equalsIgnoreCase("draw")){
-			
+			//					System.out.println("Draw");
+			//					System.exit(0);
 		}
-		
-		//goes into appropriate block based on whose turn it is.
 		if(b.getMoveCtr()%2==0){
-			
+			//					System.out.print("White's move: ");
+			//					System.out.println();
 			if(s.equalsIgnoreCase("resign")){
-				
+				//						System.out.println("Black wins");
+				//						System.exit(0);
 			}
 			String cmd[] = s.split(" ");
-			// if the move is a normal move, it will look for the piece and call its move
 			if(cmd.length==2){
 				for(Piece p:b.WhiteP){
 					if(p.getPos().equals(cmd[0])){
@@ -123,15 +123,13 @@ public class ChessControl {
 							result = true;
 							break;
 						}
-						//if it doesnt find a piece with that position, do something (i.e message).
 						else{
-							
+//							System.out.println("Illegal move, try again\n");
+//							continue here;
 						}
 					}
 				}
 			}
-			
-			// If there are three commands (2 positions +1 more), check if the person is offering a draw.
 			if(cmd.length==3){
 				if(cmd[2].equalsIgnoreCase("draw?")){
 					draw = true;
@@ -143,13 +141,13 @@ public class ChessControl {
 								break;
 							}
 							else{
-								
+//								System.out.println("Illegal move, try again\n");
+//								continue here;
 							}
 						}
 					}
 				}
 
-				// else if there are three commands, check if the third command are instructions for promoting.
 				else if(cmd[2].length()==1&&Character.isLetter(cmd[2].charAt(0))){
 					for(Piece p:b.WhiteP){
 						if(p.getPos().equals(cmd[0])&&p instanceof Pawn){
@@ -160,7 +158,8 @@ public class ChessControl {
 								break;
 							}
 							else{
-								
+//								System.out.println("Illegal move, try again\n");
+//								continue here;
 							}
 						}
 					}
@@ -171,9 +170,12 @@ public class ChessControl {
 			}
 		}
 		else{
-			// Same as the top block except for black
+//			System.out.print("Black's move: ");
+//			s = in.readLine();
+//			System.out.println();
 			if(s.equalsIgnoreCase("resign")){
-				
+//				System.out.println("White wins");
+//				System.exit(0);
 			}
 			String cmd[] = s.split(" ");
 			if(cmd.length==2){
@@ -186,7 +188,8 @@ public class ChessControl {
 							break;
 						}
 						else{
-							
+//							System.out.println("Illegal move, try again\n");
+//							continue here;
 						}
 					}
 				}
@@ -202,7 +205,8 @@ public class ChessControl {
 								break;
 							}
 							else{
-								
+//								System.out.println("Illegal move, try again\n");
+//								continue here;
 							}
 						}
 					}
@@ -218,7 +222,8 @@ public class ChessControl {
 								break;
 							}
 							else{
-								
+								//										System.out.println("Illegal move, try again\n");
+//								continue here;
 							}
 						}
 					}
@@ -228,39 +233,46 @@ public class ChessControl {
 
 			}
 		}
-		
-		//some logic stuff, not really important.
 		if(s.equalsIgnoreCase("draw"));{
 			piecehere = true;
 		}
 
 		if(!piecehere){
 			result = false;
-			
+			//					System.out.println("Illegal move, try again\n");
+//			continue here;
 		}
 
+		//				System.out.println(b+"\n");
 		piecehere = false;
-		//everything after this just checks for stuff liek checks, checkmates, and stalemates.
-		
 		if(b.isBlackCheck()){
 			if(b.isBlackCheckMate()){
-				
+				//						System.out.println("Checkmate\n");
+				//						System.out.println("White wins");
+				//						System.exit(0);
+//				break here;
 			}
+			//					System.out.println("Check\n");
 		}
 		else if(b.isWhiteCheck()){
 			if(b.isWhiteCheckMate()){
-				
+				//						System.out.println("Checkmate\n");
+				//						System.out.println("Black wins");
+				//						System.exit(0);
 			}
+			//					System.out.println("Check\n");
 		}
 		else{
 			if(b.getMoveCtr()%2==0){
 				if(b.isWhiteStaleMate()){
-					
+					//							System.out.println("Stalemate\n\nDraw");
+					//							System.exit(0);
 				}
 			}
 			else{
 				if(b.isBlackStaleMate()){
-					
+					//							System.out.println("Stalemate\n\nDraw");
+					//							System.exit(0);
 				}
 			}
 
