@@ -1,5 +1,6 @@
 package com.example.android12.GUIBoard;
 
+import Board.board;
 import android.view.View.OnClickListener;
 
 
@@ -16,4 +17,16 @@ public interface IChessBoard {
 	 * @param al eh, Action L.
 	 */
 	public void registerMajorBoardActionsAL(String name_of_action, OnClickListener al);
+	
+	/**
+	 * Redraws the chess board with the new board b.
+	 * @param b the new board to draw.
+	 */
+	public void reDraw(board b);
+	
+	/**
+	 * @return Returns the board of squares.
+	 */
+	public Square[][] getSquares();
+	
 }

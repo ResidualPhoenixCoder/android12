@@ -4,7 +4,6 @@
     android:layout_height="match_parent"
     tools:context="com.example.android12.ChessActivity$PlaceholderFragment" 
     android:id="@+id/main"
-    android:gravity="center_horizontal"
     >
 
    	<GridLayout

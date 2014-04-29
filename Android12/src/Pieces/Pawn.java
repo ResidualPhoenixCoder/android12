@@ -45,7 +45,9 @@ public class Pawn implements Piece{
 					movecount++;
 					temp = b.getTotBMoves()+b.getTotWMoves();
 					this.pos = pos;
-					return b.move(toString(),og, pos);
+//					return b.move(toString(),og, pos);
+					return b.move(og, pos);
+
 				}
 			}
 			else if(isEnPassant(pos)){

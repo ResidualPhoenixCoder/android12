@@ -2,68 +2,26 @@ package com.example.android12;
 
 import java.util.ArrayList;
 
-import android.graphics.Color;
-import android.graphics.Point;
+import com.example.android12.GUIBoard.GUIChessBoard;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
-import android.view.Display;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.GridLayout;
 import android.widget.ImageButton;
-import android.widget.TableLayout;
-import android.widget.GridLayout.LayoutParams;
 
-public class ChessActivity extends ActionBarActivity {
+public class ChessActivity extends ActionBarActivity{
 	
-	private ArrayList<ImageButton> squares  = new ArrayList<ImageButton>();
-	
+	GUIChessBoard chessboard;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_chess);
-        GridLayout chessBoardView = (GridLayout)this.findViewById(R.id.chessboard);
-        chessBoardView.setColumnCount(8);
-        chessBoardView.setRowCount(8);
-        Display display = getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        int width = size.x;
-        int height = size.y;
-        if(width>height){
-        	width = height;
-        }
-        for(int i = 0; i < 8; i++) {
-        	for(int j = 0; j < 8; j++) {
-
-              			ImageButton square = new ImageButton(this);
-                		squares.add(square);
-                		if((i+j)%2==0){
-                			square.setBackgroundColor(Color.LTGRAY);
-                		}
-                		else{
-                			square.setBackgroundColor(Color.DKGRAY);
-                		}
-                        GridLayout.LayoutParams param =new GridLayout.LayoutParams();
-                        param.rowSpec = GridLayout.spec(i);
-                        param.columnSpec = GridLayout.spec(j);
-//                        param.setMargins(-7, -3, -5, -9);
-                        param.width = width/8;
-                        param.height = param.width;
-                		square.setLayoutParams(param);
-                		chessBoardView.addView(square);
-        		
-        
-        	}
-        }
-        
-        
+        chessboard = new GUIChessBoard(this);
+        ;
         
         
     }
