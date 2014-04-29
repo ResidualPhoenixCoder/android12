@@ -100,14 +100,7 @@ public class ChessControl {
 		board b = backend_board;
 		boolean draw = false;
 		boolean piecehere = false;
-		
-		//basically we set up this string with the commands separated by spaces. First type
-		//is just commands, which is all ive implemented for now. But we will also need to append things to this 
-		//string if there is a draw offered or a promotion being made. We probably could do away with this string, but
-		//i didnt want to mess with working code until we have a working version of this.
 		String s = startPos+" "+endPos;
-		
-		
 		//first checks person agrees to draw that has been offered.
 		if(draw&&s.equalsIgnoreCase("draw")){
 			
