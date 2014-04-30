@@ -1,8 +1,6 @@
 package com.example.android12;
 
-import java.util.ArrayList;
-
-import com.example.android12.GUIBoard.GUIChessBoard;
+import Board.board;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
@@ -11,19 +9,22 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
+
+import com.example.android12.Control.ChessControl;
+import com.example.android12.GUIBoard.GUIChessBoard;
 
 public class ChessActivity extends ActionBarActivity{
-	
-	GUIChessBoard chessboard;
+	private board backend_board;
+	private GUIChessBoard chess_board;
+	private ChessControl chess_control;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_chess);
-        chessboard = new GUIChessBoard(this);
-        ;
+        this.backend_board = new board();
+        this.chess_board = new GUIChessBoard(this, backend_board);
+        this.chess_control = new ChessControl(backend_board, chess_board);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

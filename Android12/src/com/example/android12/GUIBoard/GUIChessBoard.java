@@ -29,20 +29,25 @@ public class GUIChessBoard extends View implements IChessBoard {
 	private board b;
 	private boolean inErrorState = false;
 
-	public GUIChessBoard(Context context) {
+	//TODO There should be no reference to a board.  The view should be unknowledgeable about the control.
+	public GUIChessBoard(Context context, board b) {
 		super(context);
-		parent = context;
-		squares = new Square[8][8];
+		this.parent = context;
+		this.squares = new Square[8][8];
+		this.b = b;
 		ActionBarActivity activity = (ActionBarActivity) context;
 		this.controls = new HashMap<String, Button>();
-		chessBoardView = (GridLayout) activity.findViewById(R.id.chessboard);
-		chessBoardView.setColumnCount(8);
-		chessBoardView.setRowCount(8);
+		this.chessBoardView = (GridLayout) activity
+				.findViewById(R.id.chessboard);
+		this.chessBoardView.setColumnCount(8);
+		this.chessBoardView.setRowCount(8);
 		createControlButtons();
+		Draw(this.b.board);
 	}
 
 	@Override
-	public void registerPositionAL(OnClickListener regular_al, OnClickListener promotion_al) {
+	public void registerPositionAL(OnClickListener regular_al,
+			OnClickListener promotion_al) {
 		//TODO Register end squares that are viable for promotion when a pawn gets there.
 		for (Square[] ar : squares) {
 			for (Square a : ar) {
@@ -54,7 +59,9 @@ public class GUIChessBoard extends View implements IChessBoard {
 	@Override
 	public void registerMajorBoardActionsAL(String name_of_action,
 			OnClickListener al) {
-		this.controls.get(name_of_action).setOnClickListener(al);
+		if(controls.containsKey(name_of_action)) {
+			this.controls.get(name_of_action).setOnClickListener(al);
+		}
 	}
 
 	private void createControlButtons() {
@@ -73,9 +80,7 @@ public class GUIChessBoard extends View implements IChessBoard {
 		Point size = new Point();
 		display.getSize(size);
 		int width = size.x / controls.size();
-
 		int height = size.y / 9;
-
 		Iterator<Entry<String, Button>> it = controls.entrySet().iterator();
 		ActionBarActivity activity = (ActionBarActivity) parent;
 		LinearLayout controlRow = (LinearLayout) activity

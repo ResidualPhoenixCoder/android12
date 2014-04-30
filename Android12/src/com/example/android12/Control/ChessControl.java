@@ -3,7 +3,6 @@ package com.example.android12.Control;
 import java.util.ArrayList;
 
 import Board.board;
-import Pieces.Pawn;
 import Pieces.Piece;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -213,7 +212,6 @@ public class ChessControl {
 	private boolean move() {
 		boolean result = false;
 
-		//TODO Implement a strategy design pattern for the move validation.
 		if (startP != null && endP != null) {
 			/*
 			 * The move method will have a two string method formatting this
@@ -230,8 +228,8 @@ public class ChessControl {
 				result = moveSide(backend_board.BlackP);
 			}
 
-			//everything after this just checks for stuff liek checks, checkmates, and stalemates.
-
+			
+			//TODO May need separate events for checks, checkmates, and stalemates.
 			if (backend_board.isBlackCheck()) {
 				if (backend_board.isBlackCheckMate()) {
 
