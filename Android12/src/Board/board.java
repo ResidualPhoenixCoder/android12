@@ -17,7 +17,7 @@ import Pieces.Rook;
  */
 public class board {
 
-	private int moveCtr = 0;
+	private int moveCtr;
 
 	public int getMoveCtr() {
 		return moveCtr;
@@ -43,6 +43,7 @@ public class board {
 				}
 			}
 		}
+		moveCtr=0;
 		load();
 	}
 
@@ -67,7 +68,10 @@ public class board {
 	 * bottom of the board: Occupies rows 6 and 7.
 	 */
 	public void load() {
-		int c = 0;
+		int c = 0;		
+		WhiteP.clear();wp.clear();
+		BlackP.clear();bp.clear();
+
 		for (int i = 0; i < board[1].length; i++) {
 			WhiteP.add(new Pawn(this, "w", let[c] + "2"));
 			board[1][i] = "wp";
@@ -745,6 +749,20 @@ public class board {
 		}
 		return true;
 
+	}
+	
+	public void reset(){
+		for (int i = 0; i < 8; i++) {
+			for (int j = 0; j < 8; j++) {
+				if ((i + j) % 2 == 0) {
+					board[i][j] = "##";
+				} else {
+					board[i][j] = "  ";
+				}
+			}
+		}
+		moveCtr = 0;
+		load();
 	}
 
 }

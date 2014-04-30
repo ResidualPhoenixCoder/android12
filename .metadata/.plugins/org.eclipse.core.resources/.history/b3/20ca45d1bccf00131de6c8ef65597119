@@ -1,0 +1,55 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.android12.ChessActivity$PlaceholderFragment" 
+    android:id="@+id/main"
+    >
+
+   	<GridLayout
+        android:id="@+id/chessboard"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        
+        >
+   
+   	    
+   	    </GridLayout>
+   	
+   	
+   	<RelativeLayout
+   	    android:layout_below="@+id/chessboard"
+   	    android:layout_height="wrap_content"
+   	    android:layout_width="fill_parent"
+   	    android:paddingTop="10dp"
+   	    
+   	    >
+   	    
+   	    <GridView 
+   	        android:id="@+id/move_list"
+   	        android:layout_width="fill_parent" 
+  		    android:layout_height="wrap_content"
+   		    android:columnWidth="10dp"
+  		    android:numColumns="2"
+ 		    android:verticalSpacing="10dp"
+   		    android:horizontalSpacing="10dp"
+   		    android:stretchMode="columnWidth"
+  		    android:gravity="center"
+   	        >
+   	        
+   	        
+   	        
+   	    </GridView>
+   	    
+   	    <LinearLayout 
+   	        android:id="@+id/button_controls"
+   	        >
+   	        
+   	        
+   	    </LinearLayout>
+   	    
+   	</RelativeLayout>
+   	
+
+</RelativeLayout>

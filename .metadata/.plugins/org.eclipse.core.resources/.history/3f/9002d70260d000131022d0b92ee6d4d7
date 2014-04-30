@@ -1,0 +1,36 @@
+package com.example.android12.GUIBoard;
+
+import Board.board;
+import Pieces.Piece;
+import android.content.Context;
+import android.graphics.Color;
+
+/**
+ * @author Mark Labrador
+ * 
+ * This class is just an instantiable type for the ASquare class.
+ * We are not sure if there are special operations required of different
+ * squares yet, so we are keeping the design flexible.
+ */
+public class Square extends ASquare {
+	public Square(Context ctx, Piece piece, String position) {
+		super(ctx, piece, position);
+		resetBackgroundColor();
+		
+	}
+	
+	
+	@Override
+	public String toString(){	
+		if(getPiece()==null){
+			if(bgColor == Color.LTGRAY){
+				return "  ";
+			}
+			else{
+				return "##";
+			}
+		}
+		return getPiece().toString();
+		
+	}
+}
