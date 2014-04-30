@@ -11,9 +11,8 @@ import Pieces.Queen;
 import Pieces.Rook;
 
 /**
- * @author Bharath Kannan
- * Board is initialized as a String multidimensional array.
- * All game operations are implemented through here.
+ * @author Bharath Kannan Board is initialized as a String multidimensional
+ *         array. All game operations are implemented through here.
  */
 public class board {
 
@@ -43,7 +42,7 @@ public class board {
 				}
 			}
 		}
-		moveCtr=0;
+		moveCtr = 0;
 		load();
 	}
 
@@ -68,9 +67,11 @@ public class board {
 	 * bottom of the board: Occupies rows 6 and 7.
 	 */
 	public void load() {
-		int c = 0;		
-		WhiteP.clear();wp.clear();
-		BlackP.clear();bp.clear();
+		int c = 0;
+		WhiteP.clear();
+		wp.clear();
+		BlackP.clear();
+		bp.clear();
 
 		for (int i = 0; i < board[1].length; i++) {
 			WhiteP.add(new Pawn(this, "w", let[c] + "2"));
@@ -750,8 +751,8 @@ public class board {
 		return true;
 
 	}
-	
-	public void reset(){
+
+	public void reset() {
 		for (int i = 0; i < 8; i++) {
 			for (int j = 0; j < 8; j++) {
 				if ((i + j) % 2 == 0) {

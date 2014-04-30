@@ -10,6 +10,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import Board.board;
 import Pieces.Piece;
+import Pieces.Queen;
 
 /**
  * @author Mark Labrador
@@ -25,12 +26,17 @@ public abstract class ASquare extends ImageView{
 	
 	private Piece piece;
 	private String position;
+	private boolean promotion;
+	private Class<?> promotionType;
+
 	protected int bgColor;
 	
 	public ASquare(Context ctx, Piece piece, String position) {
 		super(ctx);
 		this.piece = piece;
 		this.position = position;
+		this.promotion = false;
+		this.promotionType = Queen.class;
 	}
 
 	/**
@@ -69,6 +75,22 @@ public abstract class ASquare extends ImageView{
 	
 	public int getBackgroundColor(){
 		return bgColor;
+	}
+	
+	public boolean isPromotion() {
+		return promotion;
+	}
+
+	public void setPromotion(boolean promotion) {
+		this.promotion = promotion;
+	}
+
+	public Class<?> getPromotionType() {
+		return promotionType;
+	}
+
+	public void setPromotionType(Class<?> promotionType) {
+		this.promotionType = promotionType;
 	}
 	
 	@Override

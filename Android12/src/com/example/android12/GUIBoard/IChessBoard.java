@@ -13,7 +13,7 @@ public interface IChessBoard {
 	 * The control registers an action listener to each square on the board.
 	 * @param al eh, Action Listener.
 	 */
-	public void registerPositionAL(OnClickListener al);
+	public void registerPositionAL(OnClickListener regular_al, OnClickListener promotion_al);
 	
 	/**
 	 * Registers all button actions that don't deal with the board directly, namely, the squares.

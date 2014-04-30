@@ -1,7 +1,5 @@
 package com.example.android12.Control;
 
-import java.util.ArrayList;
-
 import Board.board;
 import Pieces.Pawn;
 import Pieces.Piece;
@@ -38,10 +36,10 @@ public class ChessControl {
 
 	private void setup() {
 		/*
-		 * List of Actions + Forward + Backward + AI + Draw + Resign
+		 * List of Actions +Forward +Backward +AI +Draw +Resign +Promotion
 		 */
-
 		view_board.registerPositionAL(new OnClickListener() {
+			/* GENERAL MOVE */
 			@Override
 			public void onClick(View v) {
 				/*
@@ -90,17 +88,6 @@ public class ChessControl {
 							currSquare.getPosition())) {
 						startP.setBackgroundColor(startOgColor);
 						startP = null;
-
-						/*
-						 * endP is never going to be filled when this happens
-						 * because the move is processed once endP is filled,
-						 * and both startP and endP are nullified.
-						 */
-
-						//if(endP != null) {
-						//	endP.setBackgroundColor(endOgColor);
-						//	endP = null;
-						//}
 					} else if (endP == null) {
 						endP = currSquare;
 						endOgColor = endP.getBackgroundColor();
@@ -116,14 +103,33 @@ public class ChessControl {
 						if (move()) {
 							view_board.reDraw(backend_board.board);
 						}
-						
+
 						startP.setBackgroundColor(startOgColor);
 						startP = null;
-						
+
 						endP.setBackgroundColor(endOgColor);
 						endP = null;
 					}
 				}
+			}
+		},
+		/* PROMOTION */
+		new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+		//				if (cmd[2].length() == 1
+		//				&& Character.isLetter(cmd[2].charAt(0))) { // else if there are three commands, check if the third command are instructions for promoting.
+		//			for (Piece p : backend_board.WhiteP) {
+		//				if (p.getPos().equals(cmd[0]) && p instanceof Pawn) {
+		//					piecehere = true;
+		//					Pawn a = (Pawn) p;
+		//					if (a.promote(cmd[2], "w", cmd[1])) {
+		//						result = true;
+		//						break;
+		//					}
+		//				}
+		//			}
+		//		}
 			}
 		});
 
@@ -147,7 +153,6 @@ public class ChessControl {
 
 		/* AI */
 		view_board.registerMajorBoardActionsAL("AI", new OnClickListener() {
-
 			@Override
 			public void onClick(View v) {
 				// TODO Trigger the artificial intelligence logic; random selection of first valid move.
@@ -195,6 +200,14 @@ public class ChessControl {
 		currGame = new Game();
 	}
 
+	/*
+	 * PSEUDOCODE
+	 * 
+	 * Checks with the non-GUI control to make sure it's valid. Have both
+	 * references to the start button/view or end button/view. Then if the move
+	 * is valid, then you'd just take the piece from the start view and load it
+	 * into the end view. Redraw the board aka result is true.
+	 */
 	private boolean move() {
 		boolean result = false;
 		boolean piecehere = false;
@@ -203,169 +216,138 @@ public class ChessControl {
 		//is just commands, which is all ive implemented for now. But we will also need to append things to this 
 		//string if there is a draw offered or a promotion being made. We probably could do away with this string, but
 		//i didnt want to mess with working code until we have a working version of this.
-		String s = startP.getPosition() + " " + endP.getPosition();
+		if (startP != null && endP != null) {
+			//String s = startP.getPosition() + " " + endP.getPosition();
+			Move currMove = new Move(startP.getPosition(), startP.getPiece(),
+					endP.getPosition(), endP.getPiece());
 
-		//goes into appropriate block based on whose turn it is.
-		if (backend_board.getMoveCtr() % 2 == 0) {
-			if (s.equalsIgnoreCase("resign")) {
-
-			}
-
-			String cmd[] = s.split(" ");
-
-			// if the move is a normal move, it will look for the piece and call its move
-			if (cmd.length == 2) {
-				for (Piece p : backend_board.WhiteP) {
-					if (p.getPos().equals(cmd[0])) {
-						piecehere = true;
-						if (p.move(cmd[1])) {
-							draw = false;
-							result = true;
-							break;
-						}
-
-						//if it doesnt find a piece with that position, do something (i.e message).
-						else {
-
-						}
-					}
-				}
-			}
-
-			// If there are three commands (2 positions +1 more), check if the person is offering a draw.
-			if (cmd.length == 3) {
-				if (cmd[2].equalsIgnoreCase("draw?")) {
-					draw = true;
-					for (Piece p : backend_board.WhiteP) {
-						if (p.getPos().equals(cmd[0])) {
-							piecehere = true;
-							if (p.move(cmd[1])) {
-								result = true;
-								break;
-							} else {
-
-							}
-						}
-					}
-				}
-
-				// else if there are three commands, check if the third command are instructions for promoting.
-				else if (cmd[2].length() == 1
-						&& Character.isLetter(cmd[2].charAt(0))) {
-					for (Piece p : backend_board.WhiteP) {
-						if (p.getPos().equals(cmd[0]) && p instanceof Pawn) {
-							piecehere = true;
-							Pawn a = (Pawn) p;
-							if (a.promote(cmd[2], "w", cmd[1])) {
-								result = true;
-								break;
-							} else {
-
-							}
-						}
-					}
-				}
-
-			}
-		} else {
-			// Same as the top block except for black
-			if (s.equalsIgnoreCase("resign")) {
-
-			}
-			String cmd[] = s.split(" ");
-			if (cmd.length == 2) {
-				for (Piece p : backend_board.BlackP) {
-					if (p.getPos().equals(cmd[0])) {
-						piecehere = true;
-						if (p.move(cmd[1])) {
-							draw = false;
-							result = true;
-							break;
-						} else {
-
-						}
-					}
-				}
-			}
-			if (cmd.length == 3) {
-				if (cmd[2].equalsIgnoreCase("draw?")) {
-					draw = true;
-					for (Piece p : backend_board.BlackP) {
-						if (p.getPos().equals(cmd[0])) {
-							piecehere = true;
-							if (p.move(cmd[1])) {
-								result = true;
-								break;
-							} else {
-
-							}
-						}
-					}
-				}
-
-				else if (cmd[2].length() == 1
-						&& Character.isLetter(cmd[2].charAt(0))) {
-					for (Piece p : backend_board.BlackP) {
-						if (p.getPos().equals(cmd[0]) && p instanceof Pawn) {
-							piecehere = true;
-							Pawn a = (Pawn) p;
-							if (a.promote(cmd[2], "b", cmd[1])) {
-								result = true;
-								break;
-							} else {
-
-							}
-						}
-					}
-				}
-
-			}
-		}
-
-		//some logic stuff, not really important.
-		if (s.equalsIgnoreCase("draw"))
-			;
-		{
-			piecehere = true;
-		}
-
-		if (!piecehere) {
-			result = false;
-		}
-
-		piecehere = false;
-		//everything after this just checks for stuff liek checks, checkmates, and stalemates.
-
-		if (backend_board.isBlackCheck()) {
-			if (backend_board.isBlackCheckMate()) {
-
-			}
-		} else if (backend_board.isWhiteCheck()) {
-			if (backend_board.isWhiteCheckMate()) {
-
-			}
-		} else {
+			//goes into appropriate block based on whose turn it is.
 			if (backend_board.getMoveCtr() % 2 == 0) {
-				if (backend_board.isWhiteStaleMate()) {
+				//String cmd[] = s.split(" ");
+
+				// if the move is a normal move, it will look for the piece and call its move
+				//if (cmd.length == 2) {
+					for (Piece p : backend_board.WhiteP) {
+						if (p.getPos().equalsIgnoreCase(startP.getPosition())) {
+							//piecehere = true;
+							if (p.move(endP.getPosition())) {
+								//draw = false;
+								result = true;
+								break;
+							}
+						}
+					}
+				//}
+
+				/*
+				 * The DRAW command does not happen here.  It happens in the draw event when either user clicks
+				 * on the draw command.
+				 */
+				// If there are three commands (2 positions +1 more), check if the person is offering a draw.
+//				if (cmd.length == 3) {
+//					if (cmd[2].equalsIgnoreCase("draw?")) {
+//						draw = true;
+//						for (Piece p : backend_board.WhiteP) {
+//							if (p.getPos().equals(cmd[0])) {
+//								piecehere = true;
+//								if (p.move(cmd[1])) {
+//									result = true;
+//									break;
+//								}
+//							}
+//						}
+//					} else 
+				}
+			} else {
+				//Same as the top block except for black
+				if (s.equalsIgnoreCase("resign")) {
+
+				}
+				
+				String cmd[] = s.split(" ");
+				if (cmd.length == 2) {
+					for (Piece p : backend_board.BlackP) {
+						if (p.getPos().equals(cmd[0])) {
+							piecehere = true;
+							if (p.move(cmd[1])) {
+								draw = false;
+								result = true;
+								break;
+							} else {
+
+							}
+						}
+					}
+				}
+				if (cmd.length == 3) {
+					if (cmd[2].equalsIgnoreCase("draw?")) {
+						draw = true;
+						for (Piece p : backend_board.BlackP) {
+							if (p.getPos().equals(cmd[0])) {
+								piecehere = true;
+								if (p.move(cmd[1])) {
+									result = true;
+									break;
+								} else {
+
+								}
+							}
+						}
+					}
+
+					else if (cmd[2].length() == 1
+							&& Character.isLetter(cmd[2].charAt(0))) {
+						for (Piece p : backend_board.BlackP) {
+							if (p.getPos().equals(cmd[0]) && p instanceof Pawn) {
+								piecehere = true;
+								Pawn a = (Pawn) p;
+								if (a.promote(cmd[2], "b", cmd[1])) {
+									result = true;
+									break;
+								} else {
+
+								}
+							}
+						}
+					}
+
+				}
+			}
+
+			//some logic stuff, not really important.
+			if (s.equalsIgnoreCase("draw"))
+				;
+			{
+				piecehere = true;
+			}
+
+			if (!piecehere) {
+				result = false;
+			}
+
+			piecehere = false;
+			//everything after this just checks for stuff liek checks, checkmates, and stalemates.
+
+			if (backend_board.isBlackCheck()) {
+				if (backend_board.isBlackCheckMate()) {
+
+				}
+			} else if (backend_board.isWhiteCheck()) {
+				if (backend_board.isWhiteCheckMate()) {
 
 				}
 			} else {
-				if (backend_board.isBlackStaleMate()) {
+				if (backend_board.getMoveCtr() % 2 == 0) {
+					if (backend_board.isWhiteStaleMate()) {
 
+					}
+				} else {
+					if (backend_board.isBlackStaleMate()) {
+
+					}
 				}
 			}
 		}
-
-		//this.backend_board.move(startButtonPos.getPosition(), endButtonPos.getPosition());
-
-		/*
-		 * PSEUDOCODE
-		 * 
-		 * Checks with the non-GUI control to make sure it's valid. Have both
-		 * references to the start button/view or end button/view. Then if the
-		 * move is valid, then you'd just take the piece from the start view and
-		 * load it into the end view. Redraw the board aka result is true.
-		 */
 		return result;
 	}
 }
