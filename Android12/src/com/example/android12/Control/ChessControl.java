@@ -111,6 +111,7 @@ public class ChessControl {
 						endP.setBackgroundColor(endOgColor);
 						endP = null;
 					}
+					
 				}
 			}
 		},

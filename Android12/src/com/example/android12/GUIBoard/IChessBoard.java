@@ -125,4 +125,10 @@ public interface IChessBoard {
 	 * This is normally a combination of the other enabler/disabler commands in this interface. 
 	 */
 	public void setDefaultState();
+	
+	/**
+	 * 
+	 * Shows the promotion list.
+	 */
+	public void showPromotionType();
 }

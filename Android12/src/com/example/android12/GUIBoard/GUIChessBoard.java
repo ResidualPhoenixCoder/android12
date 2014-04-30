@@ -1,5 +1,6 @@
 package com.example.android12.GUIBoard;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -7,7 +8,9 @@ import java.util.Map.Entry;
 
 import Board.board;
 import Pieces.Piece;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Point;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Display;
@@ -19,7 +22,6 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.android12.R;
-import com.example.android12.Control.ChessControl;
 
 public class GUIChessBoard extends View implements IChessBoard {
 	private HashMap<String, Button> controls;
@@ -28,7 +30,11 @@ public class GUIChessBoard extends View implements IChessBoard {
 	private GridLayout chessBoardView;
 	private board b;
 	private boolean inErrorState = false;
+	private AlertDialog.Builder prompieces;
+	private String promType;
+	private static final CharSequence[] values = {"Queen","Rook","Knight","Bishop"};
 
+	
 	//TODO There should be no reference to a board.  The view should be unknowledgeable about the control.
 	public GUIChessBoard(Context context, board b) {
 		super(context);
@@ -41,8 +47,9 @@ public class GUIChessBoard extends View implements IChessBoard {
 				.findViewById(R.id.chessboard);
 		this.chessBoardView.setColumnCount(8);
 		this.chessBoardView.setRowCount(8);
-		createControlButtons();
 		Draw(this.b.board);
+		createControlButtons();
+		this.setUpPopUp();
 	}
 
 	@Override
@@ -54,6 +61,12 @@ public class GUIChessBoard extends View implements IChessBoard {
 				a.setOnClickListener(regular_al);
 			}
 		}
+		
+//		for(int i = 0;i<8;i+=7){
+//			for(int j = 0;j<8;j++){
+//				squares[i][j].set
+//			}
+//		}
 	}
 
 	@Override
@@ -64,6 +77,10 @@ public class GUIChessBoard extends View implements IChessBoard {
 		}
 	}
 
+	public void registerPromotionAction(DialogInterface.OnClickListener promote){
+		this.prompieces.setItems(values, promote);
+	}
+	
 	private void createControlButtons() {
 		controls.put("Undo", new Button(parent));
 		controls.get("Undo").setText("Undo");
@@ -147,7 +164,6 @@ public class GUIChessBoard extends View implements IChessBoard {
 			}
 			chessBoardView.setPadding(width / 18, 5, 0, 0);
 		}
-
 	}
 
 	/*
@@ -181,6 +197,20 @@ public class GUIChessBoard extends View implements IChessBoard {
 		}
 	}
 
+	private void setUpPopUp(){
+		promType = "";
+		final ArrayList<String> list = new ArrayList<String>();
+		prompieces= new AlertDialog.Builder(parent);
+		prompieces.setTitle("Pick a piece.");
+		
+
+
+	}
+	
+	public void showPromotionType(){
+		prompieces.show();
+	}
+	
 	@Override
 	public Square[][] getSquares() {
 		return squares;
