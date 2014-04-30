@@ -15,14 +15,6 @@ import Pieces.Rook;
  * Board is initialized as a String multidimensional array.
  * All game operations are implemented through here.
  */
-/**
- * @author Mark Labrador
- *
- */
-/**
- * @author Mark Labrador
- * 
- */
 public class board {
 
 	private int moveCtr = 0;

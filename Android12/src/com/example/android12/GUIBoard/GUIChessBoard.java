@@ -1,20 +1,16 @@
 package com.example.android12.GUIBoard;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import Board.board;
 import Pieces.Piece;
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.Point;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Display;
 import android.view.View;
 import android.widget.Button;
 import android.widget.GridLayout;
-import android.widget.ImageButton;
-import android.widget.Toast;
 
 import com.example.android12.R;
 import com.example.android12.Control.ChessControl;

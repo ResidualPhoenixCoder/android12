@@ -107,9 +107,8 @@ public class ChessControl {
 		//i didnt want to mess with working code until we have a working version of this.
 		String s = startPos+" "+endPos;
 		
-		
 		//first checks person agrees to draw that has been offered.
-		if(draw&&s.equalsIgnoreCase("draw")){
+		if(draw && s.equalsIgnoreCase("draw")){
 			
 		}
 		
@@ -119,10 +118,12 @@ public class ChessControl {
 			if(s.equalsIgnoreCase("resign")){
 				
 			}
+			
 			String cmd[] = s.split(" ");
+			
 			// if the move is a normal move, it will look for the piece and call its move
 			if(cmd.length==2){
-				for(Piece p:b.WhiteP){
+				for(Piece p : b.WhiteP){
 					if(p.getPos().equals(cmd[0])){
 						piecehere = true;
 						if(p.move(cmd[1])){
@@ -130,6 +131,7 @@ public class ChessControl {
 							result = true;
 							break;
 						}
+						
 						//if it doesnt find a piece with that position, do something (i.e message).
 						else{
 							
