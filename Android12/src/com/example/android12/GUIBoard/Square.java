@@ -13,7 +13,6 @@ import android.graphics.Color;
  * squares yet, so we are keeping the design flexible.
  */
 public class Square extends ASquare {
-	private int bgColor;
 	public Square(Context ctx, Piece piece, String position) {
 		super(ctx, piece, position);
 		resetBackgroundColor();
@@ -21,17 +20,5 @@ public class Square extends ASquare {
 	}
 	
 	
-	@Override
-	public String toString(){	
-		if(getPiece()==null){
-			if(bgColor == Color.LTGRAY){
-				return "  ";
-			}
-			else{
-				return "##";
-			}
-		}
-		return getPiece().toString();
-		
-	}
+
 }
