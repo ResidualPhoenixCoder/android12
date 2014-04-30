@@ -39,7 +39,7 @@ public interface IChessBoard {
 	/**
 	 * @return Returns the board of squares.
 	 */
-	public Square[][] getSquares();
+	public ASquare[][] getSquares();
 	
 	/**
 	 * Receives an error message to display.

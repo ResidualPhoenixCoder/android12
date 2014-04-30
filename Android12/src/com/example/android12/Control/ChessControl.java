@@ -3,6 +3,7 @@ package com.example.android12.Control;
 import java.util.ArrayList;
 
 import Board.board;
+import Pieces.Pawn;
 import Pieces.Piece;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -118,19 +119,14 @@ public class ChessControl {
 		new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				//				if (cmd[2].length() == 1
-				//				&& Character.isLetter(cmd[2].charAt(0))) { // else if there are three commands, check if the third command are instructions for promoting.
-				//			for (Piece p : backend_board.WhiteP) {
-				//				if (p.getPos().equals(cmd[0]) && p instanceof Pawn) {
-				//					piecehere = true;
-				//					Pawn a = (Pawn) p;
-				//					if (a.promote(cmd[2], "w", cmd[1])) {
-				//						result = true;
-				//						break;
-				//					}
-				//				}
-				//			}
-				//		}
+				if(v instanceof ASquare) {
+					ASquare currSquare = (ASquare)v;
+					if(backend_board.getMoveCtr() % 2 == 0) {
+						promotePiece(currSquare, "w", backend_board.WhiteP);
+					} else {
+						promotePiece(currSquare, "b", backend_board.BlackP);
+					}
+				}
 			}
 		});
 
@@ -156,7 +152,11 @@ public class ChessControl {
 		view_board.registerMajorBoardActionsAL("AI", new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				// TODO Trigger the artificial intelligence logic; random selection of first valid move.
+				if(isWhiteMove()) {
+					autoMove(backend_board.WhiteP);
+				} else {
+					autoMove(backend_board.BlackP);
+				}
 			}
 		});
 
@@ -252,6 +252,31 @@ public class ChessControl {
 		}
 		return result;
 	}
+	
+	private boolean promotePiece(ASquare currSquare, String color, ArrayList<Piece> pieces) {
+		boolean result = false;
+		for(Piece pc : pieces) {
+			if(pc.getPos().equalsIgnoreCase(currSquare.getPosition()) && pc instanceof Pawn) {
+				Pawn p = (Pawn)pc;
+				String promotePiece = "Q";
+				switch(view_board.getPromoteType().toLowerCase()) {
+					case "knight":
+						promotePiece = "K";
+						break;
+					case "bishop":
+						promotePiece = "B";
+						break;
+					case "rook":
+						promotePiece = "R";
+						break;
+				}
+				p.promote(promotePiece, color, currSquare.getPosition());
+				result = true;
+				break;
+			}
+		}
+		return result;
+	}
 
 	private boolean moveSide(ArrayList<Piece> pieces) {
 		boolean result = false;
@@ -264,5 +289,16 @@ public class ChessControl {
 			}
 		}
 		return result;
+	}
+	
+	private boolean isWhiteMove() {
+		return backend_board.getMoveCtr() % 2 == 0;
+	}
+	
+	/*
+	 * Performs a valid move at random.
+	 */
+	private void autoMove(ArrayList<Piece> pieces) {
+		
 	}
 }

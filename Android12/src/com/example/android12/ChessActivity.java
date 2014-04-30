@@ -17,10 +17,18 @@ public class ChessActivity extends ActionBarActivity{
 	private board backend_board;
 	private GUIChessBoard chess_board;
 	private ChessControl chess_control;
+	
+    /* 
+     * APPLICATION ENTRY-POINT
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_chess);
+        
+        /*
+         * MODEL, VIEW, CONTROL link-ups happen here.
+         */
         this.backend_board = new board();
         this.chess_board = new GUIChessBoard(this, backend_board);
         this.chess_control = new ChessControl(backend_board, chess_board);

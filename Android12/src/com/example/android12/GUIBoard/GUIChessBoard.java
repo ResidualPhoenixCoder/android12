@@ -29,7 +29,7 @@ public class GUIChessBoard extends View implements IChessBoard {
 	private board b;
 	private boolean inErrorState = false;
 
-	//TODO There should be no reference to a board.  The view should be unknowledgeable about the control.
+	//TODO There should be no reference to a board.  The view should have no knowledge about the control.
 	public GUIChessBoard(Context context, board b) {
 		super(context);
 		this.parent = context;
@@ -153,6 +153,7 @@ public class GUIChessBoard extends View implements IChessBoard {
 	/*
 	 * PSEUDOCODE Check each square with the txt representation of the board. If
 	 * there is a difference, redraw the image.
+	 * 
 	 */
 	@Override
 	public void reDraw(String[][] s) {
@@ -174,7 +175,6 @@ public class GUIChessBoard extends View implements IChessBoard {
 					}
 
 					squares[i][j].setPiece(u);
-
 				}
 				squares[i][j].setChessImage();
 			}
@@ -182,7 +182,7 @@ public class GUIChessBoard extends View implements IChessBoard {
 	}
 
 	@Override
-	public Square[][] getSquares() {
+	public ASquare[][] getSquares() {
 		return squares;
 	}
 
@@ -268,5 +268,11 @@ public class GUIChessBoard extends View implements IChessBoard {
 		enableDraw();
 		enableResign();
 		disableForward();
+	}
+
+	@Override
+	public String getPromoteType() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
