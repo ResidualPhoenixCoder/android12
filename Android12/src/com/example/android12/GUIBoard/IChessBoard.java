@@ -32,9 +32,9 @@ public interface IChessBoard {
 	
 	/**
 	 * Redraws the chess board with the new board b.
-	 * @param b the new board to draw.
+	 * @param s the new string board to draw.
 	 */
-	public void reDraw(board b);
+	public void reDraw(String[][] s);
 	
 	/**
 	 * @return Returns the board of squares.

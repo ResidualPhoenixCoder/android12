@@ -12,11 +12,18 @@ import android.graphics.Point;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Display;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.GridLayout;
+<<<<<<< HEAD
+=======
+import android.widget.GridView;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
+>>>>>>> cae7994425dcf7a6fc3a75f674245a43f98088a5
 
 import com.example.android12.R;
 import com.example.android12.Control.ChessControl;
@@ -39,10 +46,9 @@ public class GUIChessBoard extends View implements IChessBoard {
 		chessBoardView.setColumnCount(8);
         chessBoardView.setRowCount(8);
 
-        //TODO Remove this test code.
 		//test code for now
 		b = new board();
-		Draw(b.board);
+		Draw(b);
 		createControlButtons();
 		ChessControl cc = new ChessControl(b, this);
         
@@ -50,6 +56,7 @@ public class GUIChessBoard extends View implements IChessBoard {
 
 	@Override
 	public void registerPositionAL(OnClickListener al) {
+		// TODO Auto-generated method stub
 		for(Square[] ar : squares){
 			for(Square a: ar){
 				a.setOnClickListener(al);
@@ -103,12 +110,14 @@ public class GUIChessBoard extends View implements IChessBoard {
 	
 	private void setUpMoveList(){
 		ListView movelist = (ListView)((ActionBarActivity)parent).findViewById(R.id.move_list);
+		
 	}
 
-	private void Draw(String[][] txtBoard) {
+	private void Draw(board b) {
+		// TODO Auto-generated method stub
 		GridLayout chessBoardView = (GridLayout)((ActionBarActivity)parent).findViewById(R.id.chessboard);
 		chessBoardView.removeAllViews();
-		//String[][] txtBoard = b.board;
+		String[][] txtBoard = b.board;
         Display display =((ActionBarActivity)parent).getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
@@ -155,13 +164,10 @@ public class GUIChessBoard extends View implements IChessBoard {
 		
 	}
 
-	/*
-	 * PSEUDOCODE
-	 * Check each square with the txt representation of the board. 
-	 * If there is a difference, redraw the image.
-	 */
 	@Override
-	public void reDraw(String[][] s) {
+	public void reDraw(board b) {
+		String[][] s = b.board;
+		
 		for(int i = 0; i<s.length;i++){
 			for(int j = 0; j<s[1].length;j++){
 				if(!s[i][j].equalsIgnoreCase(squares[i][j].toString())){
@@ -186,90 +192,120 @@ public class GUIChessBoard extends View implements IChessBoard {
 				squares[i][j].setChessImage();
 			}
 		}
+		
+		
+		
+		
+		// TODO redraw the board when a piece moves
+		/*
+		 * 
+		 * PSEUDOCODE
+		 * Check each square with the txt representation of the board. 
+		 * If there is a difference, redraw the image.
+		 * 
+		 * 
+		 * 
+		 */
 	}
 
 	@Override
 	public Square[][] getSquares() {
+		// TODO Auto-generated method stub
 		return squares;
 	}
 
 	@Override
 	public void displayErrorMsg(String msg) {
+		// TODO Auto-generated method stub
 		inErrorState = true;
 		Toast.makeText(parent, msg, Toast.LENGTH_LONG).show();
 	}
 
 	@Override
 	public void hideErrorMsg() {
+		// TODO Auto-generated method stub
 		inErrorState = false;
 	}
 
 	@Override
 	public boolean inErrorState() {
+		// TODO Auto-generated method stub
 		return inErrorState;
 	}
 
 	@Override
 	public void disableForward() {
+		// TODO Auto-generated method stub
 		controls.get("Forward").setEnabled(false);
 	}
 
 	@Override
 	public void enableForward() {
+		// TODO Auto-generated method stub
 		controls.get("Forward").setEnabled(true);
 
 	}
 
 	@Override
 	public void disableBackward() {
+		// TODO Auto-generated method stub
 		controls.get("Undo").setEnabled(false);
 	}
 
 	@Override
 	public void enableBackward() {
+		// TODO Auto-generated method stub
 		controls.get("Undo").setEnabled(true);
 
 	}
 
 	@Override
 	public void disableAI() {
+		// TODO Auto-generated method stub
 		controls.get("AI").setEnabled(false);
 	}
 
 	@Override
 	public void enableAI() {
+		// TODO Auto-generated method stub
 		controls.get("AI").setEnabled(true);
 	}
 
 	@Override
 	public void disableDraw() {
+		// TODO Auto-generated method stub
 		controls.get("Draw").setEnabled(false);
 	}
 
 	@Override
 	public void enableDraw() {
+		// TODO Auto-generated method stub
 		controls.get("Draw").setEnabled(true);
 	}
 
 	@Override
 	public void disableResign() {
+		// TODO Auto-generated method stub
 		controls.get("Resign").setEnabled(false);
 	}
 
 	@Override
 	public void enableResign() {
+		// TODO Auto-generated method stub
 		controls.get("Resign").setEnabled(true);
 	}
 
 	@Override
 	public void setDefaultState() {
+		// TODO Auto-generated method stub
 		setDefaultAuxControlState();
 		b.reset();
-		Draw(b.board);
+		Draw(b);
 	}
 
 	@Override
 	public void setDefaultAuxControlState() {
+		// TODO Auto-generated method stub
 		enableAI();
 		enableBackward();
 		enableDraw();

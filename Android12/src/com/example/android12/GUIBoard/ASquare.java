@@ -19,6 +19,10 @@ import Pieces.Piece;
  * All the listeners are registered and stored in the controller classes.
  */
 public abstract class ASquare extends ImageView{
+	public static final int selectedSquareColor = Color.YELLOW;
+	public static final int blackSquareColor = Color.DKGRAY;
+	public static final int whiteSquareColor = Color.LTGRAY;
+	
 	private Piece piece;
 	private String position;
 	protected int bgColor;
@@ -27,7 +31,6 @@ public abstract class ASquare extends ImageView{
 		super(ctx);
 		this.piece = piece;
 		this.position = position;
-		
 	}
 
 	/**
@@ -55,12 +58,12 @@ public abstract class ASquare extends ImageView{
 		int r = board.convert(position.substring(0,1));
 		int c = Integer.parseInt(position.substring(1));
 		if((r+c)%2==0){
-			this.setBackgroundColor(Color.LTGRAY);
-			bgColor = Color.LTGRAY;
+			this.setBackgroundColor(whiteSquareColor);
+			bgColor = whiteSquareColor;
 		}
 		else{
-			this.setBackgroundColor(Color.DKGRAY);
-			bgColor = Color.DKGRAY;
+			this.setBackgroundColor(blackSquareColor);
+			bgColor = blackSquareColor;
 		}
 	}
 	
@@ -71,7 +74,7 @@ public abstract class ASquare extends ImageView{
 	@Override
 	public String toString(){	
 		if(getPiece()==null){
-			if(bgColor == Color.LTGRAY){
+			if(bgColor == whiteSquareColor){
 				return "  ";
 			}
 			else{

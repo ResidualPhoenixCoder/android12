@@ -1,293 +1,370 @@
 package com.example.android12.Control;
 
-
+import java.util.ArrayList;
 
 import Board.board;
 import Pieces.Pawn;
 import Pieces.Piece;
-import android.graphics.Color;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Button;
 
+import com.example.android12.GUIBoard.ASquare;
 import com.example.android12.GUIBoard.IChessBoard;
-import com.example.android12.GUIBoard.Square;
+import com.example.android12.Model.Game;
+import com.example.android12.Model.Move;
 
 public class ChessControl {
 	private board backend_board;
 	private IChessBoard view_board;
-	private String startPos=""; //TODO Suggestion, save a reference to the entire start view.
-	private String endPos="";
+
+	private ASquare startP;
+	private ASquare endP;
+
+	private int startOgColor;
+	private int endOgColor;
+
+	private boolean draw;
+	private boolean resign;
+
+	private Game currGame;
+
 	public ChessControl(board backend_board, IChessBoard view_board) {
 		this.backend_board = backend_board;
 		this.view_board = view_board;
+		this.currGame = new Game();
 		setup();
 	}
 
 	private void setup() {
-		view_board.registerPositionAL(new OnClickListener() {
+		/*
+		 * List of Actions + Forward + Backward + AI + Draw + Resign
+		 */
 
+		view_board.registerPositionAL(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				/*
-				 * TODO FEATURES
-				 * +After clicking the first button, disable non-board buttons to prevent confusion.
-				 * +After a successful move is made or button is unselected, re-enable all other non-board functions.
-				 */
-
-				Square s = (Square)v;
-				int ogColor = s.getBackgroundColor();
-				if(startPos.equals("")&&s.getPiece()!=null){
-					startPos = s.getPosition();
-					s.setBackgroundColor(Color.YELLOW);
-				}
-
-				else if(s.getPosition().equals(startPos)&&s.getPiece()!=null){
-					startPos = "";
-					endPos = "";
-					s.setBackgroundColor(ogColor);					
-				}
-
-				else{
-					endPos = s.getPosition();
-				}
-
-				boolean b = false;
-				if(startPos.length()>0&&endPos.length()>0){
-					b= move();
-				}
-
-				if(b){
-					view_board.reDraw(backend_board);
-					for(Square[] ar :view_board.getSquares()){
-						for(Square x : ar){
-							if(x.getPosition().equals(startPos)){
-								x.resetBackgroundColor();
-							}
-						}
-					}
-					
-					startPos = "";
-					endPos = "";
-				}
-				/*
-				 * v.getId() this is your position.
-				 * Parse position.
+				 * v.getId() this is your position. Parse position.
 				 * 
-				 * DECIDE WHETHER TO HIGHLIGHT
-				 * Check whether the current is occupied.
-				 * + If it is, check whether the piece is the same color as whoever's turn.
-				 * ++Then you highlight the square.
+				 * DECIDE WHETHER TO HIGHLIGHT Check whether the current is
+				 * occupied. + If it is, check whether the piece is the same
+				 * color as whoever's turn. ++Then you highlight the square.
 				 * Otherwise, break.
 				 * 
 				 * 
-				 * if startPos is empty, load this into the startPos.
-				 * else if startPos is the same as the square selected again, unselect the current square and break.
-				 * Otherwise, fill the end.
+				 * if startPos is empty and the clicked on view contains a
+				 * piece, load this into the startPos. else if startPos is the
+				 * same as the square selected again, unselect the current
+				 * square and break. Otherwise, fill the end.
 				 * 
-				 * if both startPos and endPos are filled, then perform the move.
-				 * if move returns false, then don't redraw and keep startPos highlighted.
-				 * if move returns true, then redraw and clear all highlights. 
+				 * if both startPos and endPos are filled, then perform the
+				 * move. if move returns false, then don't redraw and keep
+				 * startPos highlighted. if move returns true, then redraw and
+				 * clear all highlights.
 				 * 
 				 * Basically, call move.
 				 */
+
+				/*
+				 * TODO FEATURES +After clicking the first button, disable
+				 * non-board buttons to prevent confusion. +After a successful
+				 * move is made or button is unselected, re-enable all other
+				 * non-board functions.
+				 */
+
+				/*
+				 * Side that is moving is determined by the backend board's move
+				 * counter.
+				 */
+				if (v instanceof ASquare) {
+					ASquare currSquare = (ASquare) v;
+
+					if (startP == null) {
+						if (currSquare.getPiece() != null) {
+							startP = currSquare;
+							startOgColor = startP.getBackgroundColor();
+							startP.setBackgroundColor(ASquare.selectedSquareColor);
+						}
+					} else if (startP.getPosition().equals(
+							currSquare.getPosition())) {
+						startP.setBackgroundColor(startOgColor);
+						startP = null;
+
+						/*
+						 * endP is never going to be filled when this happens
+						 * because the move is processed once endP is filled,
+						 * and both startP and endP are nullified.
+						 */
+
+						//if(endP != null) {
+						//	endP.setBackgroundColor(endOgColor);
+						//	endP = null;
+						//}
+					} else if (endP == null) {
+						endP = currSquare;
+						endOgColor = endP.getBackgroundColor();
+						endP.setBackgroundColor(ASquare.selectedSquareColor);
+					}
+
+					/*
+					 * Start processing the move, if startP and endP are
+					 * non-empty. The invariant here is that they are only
+					 * non-empty, if they are valid locations.
+					 */
+					if (startP != null && endP != null) {
+						if (move()) {
+							view_board.reDraw(backend_board.board);
+						}
+						
+						startP.setBackgroundColor(startOgColor);
+						startP = null;
+						
+						endP.setBackgroundColor(endOgColor);
+						endP = null;
+					}
+				}
+			}
+		});
+
+		/* FORWARD */
+		view_board.registerMajorBoardActionsAL("Forward",
+				new OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						//TODO Trigger forward movement based on the list or bring to current position.
+					}
+				});
+
+		/* BACKWARD */
+		view_board.registerMajorBoardActionsAL("Backward",
+				new OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						// TODO Trigger backward movement based on the list or until original board positions are found.
+					}
+				});
+
+		/* AI */
+		view_board.registerMajorBoardActionsAL("AI", new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Trigger the artificial intelligence logic; random selection of first valid move.
+			}
+		});
+
+		/* DRAW */
+		view_board.registerMajorBoardActionsAL("Draw", new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				/*
+				 * TODO Check whether this is an offer or accept of a draw.
+				 * Keywords: + Offer Draw + Accept Draw
+				 */
+				if (v instanceof Button) {
+					Button drawBtn = (Button) v;
+					if (drawBtn.getText().toString()
+							.equalsIgnoreCase("Offer Draw")) {
+						draw = true;
+					} else if (drawBtn.getText().toString()
+							.equalsIgnoreCase("Accept Draw")) {
+						new_game();
+					}
+				}
+			}
+		});
+
+		/* RESIGN */
+		view_board.registerMajorBoardActionsAL("Resign", new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				new_game();
 			}
 		});
 	}
 
+	/*
+	 * Resets the entire application to prepare for a new game.
+	 */
+	//TODO Need to save current game, if this is ending a game.
+	private void new_game() {
+		backend_board = new board();
+		view_board.setDefaultState();
+		view_board.reDraw(backend_board.board);
+		currGame = new Game();
+	}
 
 	private boolean move() {
 		boolean result = false;
-		board b = backend_board;
-		boolean draw = false;
 		boolean piecehere = false;
-		
+
 		//basically we set up this string with the commands separated by spaces. First type
 		//is just commands, which is all ive implemented for now. But we will also need to append things to this 
 		//string if there is a draw offered or a promotion being made. We probably could do away with this string, but
 		//i didnt want to mess with working code until we have a working version of this.
-		String s = startPos+" "+endPos;
-		
-		//first checks person agrees to draw that has been offered.
-		if(draw && s.equalsIgnoreCase("draw")){
-			
-		}
-		
+		String s = startP.getPosition() + " " + endP.getPosition();
+
 		//goes into appropriate block based on whose turn it is.
-		if(b.getMoveCtr()%2==0){
-			
-			if(s.equalsIgnoreCase("resign")){
-				
+		if (backend_board.getMoveCtr() % 2 == 0) {
+			if (s.equalsIgnoreCase("resign")) {
+
 			}
-			
+
 			String cmd[] = s.split(" ");
-			
+
 			// if the move is a normal move, it will look for the piece and call its move
-			if(cmd.length==2){
-				for(Piece p : b.WhiteP){
-					if(p.getPos().equals(cmd[0])){
+			if (cmd.length == 2) {
+				for (Piece p : backend_board.WhiteP) {
+					if (p.getPos().equals(cmd[0])) {
 						piecehere = true;
-						if(p.move(cmd[1])){
+						if (p.move(cmd[1])) {
 							draw = false;
 							result = true;
 							break;
 						}
-						
+
 						//if it doesnt find a piece with that position, do something (i.e message).
-						else{
-							
+						else {
+
 						}
 					}
 				}
 			}
-			
+
 			// If there are three commands (2 positions +1 more), check if the person is offering a draw.
-			if(cmd.length==3){
-				if(cmd[2].equalsIgnoreCase("draw?")){
+			if (cmd.length == 3) {
+				if (cmd[2].equalsIgnoreCase("draw?")) {
 					draw = true;
-					for(Piece p:b.WhiteP){
-						if(p.getPos().equals(cmd[0])){
+					for (Piece p : backend_board.WhiteP) {
+						if (p.getPos().equals(cmd[0])) {
 							piecehere = true;
-							if(p.move(cmd[1])){
+							if (p.move(cmd[1])) {
 								result = true;
 								break;
-							}
-							else{
-								
+							} else {
+
 							}
 						}
 					}
 				}
 
 				// else if there are three commands, check if the third command are instructions for promoting.
-				else if(cmd[2].length()==1&&Character.isLetter(cmd[2].charAt(0))){
-					for(Piece p:b.WhiteP){
-						if(p.getPos().equals(cmd[0])&&p instanceof Pawn){
+				else if (cmd[2].length() == 1
+						&& Character.isLetter(cmd[2].charAt(0))) {
+					for (Piece p : backend_board.WhiteP) {
+						if (p.getPos().equals(cmd[0]) && p instanceof Pawn) {
 							piecehere = true;
-							Pawn a = (Pawn) p ;
-							if(a.promote(cmd[2],"w",cmd[1])){
+							Pawn a = (Pawn) p;
+							if (a.promote(cmd[2], "w", cmd[1])) {
 								result = true;
 								break;
-							}
-							else{
-								
+							} else {
+
 							}
 						}
 					}
 				}
 
-
-
 			}
-		}
-		else{
+		} else {
 			// Same as the top block except for black
-			if(s.equalsIgnoreCase("resign")){
-				
+			if (s.equalsIgnoreCase("resign")) {
+
 			}
 			String cmd[] = s.split(" ");
-			if(cmd.length==2){
-				for(Piece p:b.BlackP){
-					if(p.getPos().equals(cmd[0])){
+			if (cmd.length == 2) {
+				for (Piece p : backend_board.BlackP) {
+					if (p.getPos().equals(cmd[0])) {
 						piecehere = true;
-						if(p.move(cmd[1])){
+						if (p.move(cmd[1])) {
 							draw = false;
 							result = true;
 							break;
-						}
-						else{
-							
+						} else {
+
 						}
 					}
 				}
 			}
-			if(cmd.length==3){
-				if(cmd[2].equalsIgnoreCase("draw?")){
+			if (cmd.length == 3) {
+				if (cmd[2].equalsIgnoreCase("draw?")) {
 					draw = true;
-					for(Piece p:b.BlackP){
-						if(p.getPos().equals(cmd[0])){
+					for (Piece p : backend_board.BlackP) {
+						if (p.getPos().equals(cmd[0])) {
 							piecehere = true;
-							if(p.move(cmd[1])){
+							if (p.move(cmd[1])) {
 								result = true;
 								break;
-							}
-							else{
-								
+							} else {
+
 							}
 						}
 					}
 				}
 
-				else if(cmd[2].length()==1&&Character.isLetter(cmd[2].charAt(0))){
-					for(Piece p:b.BlackP){
-						if(p.getPos().equals(cmd[0])&&p instanceof Pawn){
+				else if (cmd[2].length() == 1
+						&& Character.isLetter(cmd[2].charAt(0))) {
+					for (Piece p : backend_board.BlackP) {
+						if (p.getPos().equals(cmd[0]) && p instanceof Pawn) {
 							piecehere = true;
-							Pawn a = (Pawn) p ;
-							if(a.promote(cmd[2],"b",cmd[1])){
+							Pawn a = (Pawn) p;
+							if (a.promote(cmd[2], "b", cmd[1])) {
 								result = true;
 								break;
-							}
-							else{
-								
+							} else {
+
 							}
 						}
 					}
 				}
-
-
 
 			}
 		}
-		
+
 		//some logic stuff, not really important.
-		if(s.equalsIgnoreCase("draw"));{
+		if (s.equalsIgnoreCase("draw"))
+			;
+		{
 			piecehere = true;
 		}
 
-		if(!piecehere){
+		if (!piecehere) {
 			result = false;
-			
 		}
 
 		piecehere = false;
 		//everything after this just checks for stuff liek checks, checkmates, and stalemates.
-		
-		if(b.isBlackCheck()){
-			if(b.isBlackCheckMate()){
-				
+
+		if (backend_board.isBlackCheck()) {
+			if (backend_board.isBlackCheckMate()) {
+
 			}
-		}
-		else if(b.isWhiteCheck()){
-			if(b.isWhiteCheckMate()){
-				
+		} else if (backend_board.isWhiteCheck()) {
+			if (backend_board.isWhiteCheckMate()) {
+
 			}
-		}
-		else{
-			if(b.getMoveCtr()%2==0){
-				if(b.isWhiteStaleMate()){
-					
+		} else {
+			if (backend_board.getMoveCtr() % 2 == 0) {
+				if (backend_board.isWhiteStaleMate()) {
+
+				}
+			} else {
+				if (backend_board.isBlackStaleMate()) {
+
 				}
 			}
-			else{
-				if(b.isBlackStaleMate()){
-					
-				}
-			}
-
-
-
 		}
-
-
 
 		//this.backend_board.move(startButtonPos.getPosition(), endButtonPos.getPosition());
 
 		/*
 		 * PSEUDOCODE
 		 * 
-		 * Checks with the non-GUI control to make sure it's valid.
-		 * Have both references to the start button/view or end button/view.
-		 * Then if the move is valid, then you'd just take the piece from the start view and load it into the end view.
-		 * Redraw the board aka result is true.
+		 * Checks with the non-GUI control to make sure it's valid. Have both
+		 * references to the start button/view or end button/view. Then if the
+		 * move is valid, then you'd just take the piece from the start view and
+		 * load it into the end view. Redraw the board aka result is true.
 		 */
 		return result;
 	}

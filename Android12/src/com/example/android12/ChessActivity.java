@@ -22,8 +22,6 @@ public class ChessActivity extends ActionBarActivity{
         setContentView(R.layout.fragment_chess);
         chessboard = new GUIChessBoard(this);
         ;
-        
-        
     }
 
 

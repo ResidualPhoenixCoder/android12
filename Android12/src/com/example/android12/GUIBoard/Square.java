@@ -1,9 +1,7 @@
 package com.example.android12.GUIBoard;
 
-import Board.board;
 import Pieces.Piece;
 import android.content.Context;
-import android.graphics.Color;
 
 /**
  * @author Mark Labrador
@@ -12,13 +10,9 @@ import android.graphics.Color;
  * We are not sure if there are special operations required of different
  * squares yet, so we are keeping the design flexible.
  */
-public class Square extends ASquare {
+class Square extends ASquare {
 	public Square(Context ctx, Piece piece, String position) {
 		super(ctx, piece, position);
 		resetBackgroundColor();
-		
 	}
-	
-	
-
 }
