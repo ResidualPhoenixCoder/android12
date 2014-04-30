@@ -50,8 +50,6 @@ public class GUIChessBoard extends View implements IChessBoard {
 			}
 		}
 	}
-	
-	
 
 	@Override
 	public void registerMajorBoardActionsAL(String name_of_action,

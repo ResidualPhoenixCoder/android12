@@ -1,5 +1,7 @@
 package com.example.android12.Control;
 
+import java.util.ArrayList;
+
 import Board.board;
 import Pieces.Pawn;
 import Pieces.Piece;
@@ -97,7 +99,7 @@ public class ChessControl {
 					/*
 					 * Start processing the move, if startP and endP are
 					 * non-empty. The invariant here is that they are only
-					 * non-empty, if they are valid locations.
+					 * non-empty, if they are valid locations after each move.
 					 */
 					if (startP != null && endP != null) {
 						if (move()) {
@@ -117,19 +119,19 @@ public class ChessControl {
 		new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-		//				if (cmd[2].length() == 1
-		//				&& Character.isLetter(cmd[2].charAt(0))) { // else if there are three commands, check if the third command are instructions for promoting.
-		//			for (Piece p : backend_board.WhiteP) {
-		//				if (p.getPos().equals(cmd[0]) && p instanceof Pawn) {
-		//					piecehere = true;
-		//					Pawn a = (Pawn) p;
-		//					if (a.promote(cmd[2], "w", cmd[1])) {
-		//						result = true;
-		//						break;
-		//					}
-		//				}
-		//			}
-		//		}
+				//				if (cmd[2].length() == 1
+				//				&& Character.isLetter(cmd[2].charAt(0))) { // else if there are three commands, check if the third command are instructions for promoting.
+				//			for (Piece p : backend_board.WhiteP) {
+				//				if (p.getPos().equals(cmd[0]) && p instanceof Pawn) {
+				//					piecehere = true;
+				//					Pawn a = (Pawn) p;
+				//					if (a.promote(cmd[2], "w", cmd[1])) {
+				//						result = true;
+				//						break;
+				//					}
+				//				}
+				//			}
+				//		}
 			}
 		});
 
@@ -165,7 +167,7 @@ public class ChessControl {
 			public void onClick(View v) {
 				/*
 				 * TODO Check whether this is an offer or accept of a draw.
-				 * Keywords: + Offer Draw + Accept Draw
+				 * Keywords: +Offer Draw +Accept Draw
 				 */
 				if (v instanceof Button) {
 					Button drawBtn = (Button) v;
@@ -210,122 +212,24 @@ public class ChessControl {
 	 */
 	private boolean move() {
 		boolean result = false;
-		boolean piecehere = false;
 
-		//basically we set up this string with the commands separated by spaces. First type
-		//is just commands, which is all ive implemented for now. But we will also need to append things to this 
-		//string if there is a draw offered or a promotion being made. We probably could do away with this string, but
-		//i didnt want to mess with working code until we have a working version of this.
+		//TODO Implement a strategy design pattern for the move validation.
 		if (startP != null && endP != null) {
-			//String s = startP.getPosition() + " " + endP.getPosition();
+			/*
+			 * The move method will have a two string method formatting this
+			 * appropriately when it is listed. Just call Move.toString() method
+			 * on the instance.
+			 */
 			Move currMove = new Move(startP.getPosition(), startP.getPiece(),
 					endP.getPosition(), endP.getPiece());
 
-			//goes into appropriate block based on whose turn it is.
+			//Moves appropriate side depending on whose turn it is.
 			if (backend_board.getMoveCtr() % 2 == 0) {
-				//String cmd[] = s.split(" ");
-
-				// if the move is a normal move, it will look for the piece and call its move
-				//if (cmd.length == 2) {
-					for (Piece p : backend_board.WhiteP) {
-						if (p.getPos().equalsIgnoreCase(startP.getPosition())) {
-							//piecehere = true;
-							if (p.move(endP.getPosition())) {
-								//draw = false;
-								result = true;
-								break;
-							}
-						}
-					}
-				//}
-
-				/*
-				 * The DRAW command does not happen here.  It happens in the draw event when either user clicks
-				 * on the draw command.
-				 */
-				// If there are three commands (2 positions +1 more), check if the person is offering a draw.
-//				if (cmd.length == 3) {
-//					if (cmd[2].equalsIgnoreCase("draw?")) {
-//						draw = true;
-//						for (Piece p : backend_board.WhiteP) {
-//							if (p.getPos().equals(cmd[0])) {
-//								piecehere = true;
-//								if (p.move(cmd[1])) {
-//									result = true;
-//									break;
-//								}
-//							}
-//						}
-//					} else 
-				}
+				result = moveSide(backend_board.WhiteP);
 			} else {
-				//Same as the top block except for black
-				if (s.equalsIgnoreCase("resign")) {
-
-				}
-				
-				String cmd[] = s.split(" ");
-				if (cmd.length == 2) {
-					for (Piece p : backend_board.BlackP) {
-						if (p.getPos().equals(cmd[0])) {
-							piecehere = true;
-							if (p.move(cmd[1])) {
-								draw = false;
-								result = true;
-								break;
-							} else {
-
-							}
-						}
-					}
-				}
-				if (cmd.length == 3) {
-					if (cmd[2].equalsIgnoreCase("draw?")) {
-						draw = true;
-						for (Piece p : backend_board.BlackP) {
-							if (p.getPos().equals(cmd[0])) {
-								piecehere = true;
-								if (p.move(cmd[1])) {
-									result = true;
-									break;
-								} else {
-
-								}
-							}
-						}
-					}
-
-					else if (cmd[2].length() == 1
-							&& Character.isLetter(cmd[2].charAt(0))) {
-						for (Piece p : backend_board.BlackP) {
-							if (p.getPos().equals(cmd[0]) && p instanceof Pawn) {
-								piecehere = true;
-								Pawn a = (Pawn) p;
-								if (a.promote(cmd[2], "b", cmd[1])) {
-									result = true;
-									break;
-								} else {
-
-								}
-							}
-						}
-					}
-
-				}
+				result = moveSide(backend_board.BlackP);
 			}
 
-			//some logic stuff, not really important.
-			if (s.equalsIgnoreCase("draw"))
-				;
-			{
-				piecehere = true;
-			}
-
-			if (!piecehere) {
-				result = false;
-			}
-
-			piecehere = false;
 			//everything after this just checks for stuff liek checks, checkmates, and stalemates.
 
 			if (backend_board.isBlackCheck()) {
@@ -345,6 +249,19 @@ public class ChessControl {
 					if (backend_board.isBlackStaleMate()) {
 
 					}
+				}
+			}
+		}
+		return result;
+	}
+
+	private boolean moveSide(ArrayList<Piece> pieces) {
+		boolean result = false;
+		for (Piece p : pieces) {
+			if (p.getPos().equalsIgnoreCase(startP.getPosition())) {
+				if (p.move(endP.getPosition())) {
+					result = true;
+					break;
 				}
 			}
 		}
