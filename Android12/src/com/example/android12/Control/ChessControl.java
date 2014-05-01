@@ -54,12 +54,10 @@ public class ChessControl {
 
 		view_board.registerMajorBoardActionsAL("Date Sort",
 				new OnClickListener() {
-
 					@Override
 					public void onClick(View v) {
 						model.sortByDate();
 					}
-
 				});
 
 		view_board.registerMajorBoardActionsAL("Title Sort",
@@ -110,39 +108,44 @@ public class ChessControl {
 				if (v instanceof ASquare) {
 					ASquare currSquare = (ASquare) v;
 
-					if (startP == null) {
-						if (currSquare.getPiece() != null) {
+					if (startP == null) { //INITIAL SELECTION
+						Piece currPiece = currSquare.getPiece();
+						if (currPiece != null && isWhiteMove() ? currPiece
+								.getColor().equalsIgnoreCase("w") : currPiece
+								.getColor().equalsIgnoreCase("b")) {
 							startP = currSquare;
 							startOgColor = startP.getBackgroundColor();
 							startP.setBackgroundColor(ASquare.selectedSquareColor);
 						}
 					} else if (startP.getPosition().equals(
-							currSquare.getPosition())) {
+							currSquare.getPosition())) { //DE-SELECTION
 						startP.setBackgroundColor(startOgColor);
 						startP = null;
-					} else if (endP == null) {
-						Piece currPiece = currSquare.getPiece();
-						String tmpPos = currSquare.getPosition();
-						boolean legal = currPiece.isLegal(currSquare
-								.getPosition());
-						if (currPiece instanceof Pawn) {
-							if (((Pawn) currPiece).isEnPassant(tmpPos) || legal) {
+					} else if (endP == null) { //END SELECTION
+						Piece currPiece = startP.getPiece();
+						if (currPiece != null) {
+							String tmpPos = currSquare.getPosition();
+							boolean legal = currPiece.isLegal(currSquare
+									.getPosition());
+							if (currPiece instanceof Pawn) { //PAWN ENPASSANT CHECK
+								if (((Pawn) currPiece).isEnPassant(tmpPos)
+										|| legal) {
+									endP = currSquare;
+									endOgColor = endP.getBackgroundColor();
+									endP.setBackgroundColor(ASquare.selectedSquareColor);
+								}
+							} else if (currPiece instanceof King) { //KING CASTLING CHECK
+								King tmpK = (King) currPiece;
+								if (tmpK.isCastle(tmpPos) || legal) {
+									endP = currSquare;
+									endOgColor = endP.getBackgroundColor();
+									endP.setBackgroundColor(ASquare.selectedSquareColor);
+								}
+							} else if (legal) { //GENERAL PIECE CHECK
 								endP = currSquare;
 								endOgColor = endP.getBackgroundColor();
 								endP.setBackgroundColor(ASquare.selectedSquareColor);
 							}
-						} else if (currPiece instanceof King) {
-							King tmpK = (King) currPiece;
-							if (tmpK.isKingSideCastle()
-									|| tmpK.isQueenSideCastle() || legal) {
-								endP = currSquare;
-								endOgColor = endP.getBackgroundColor();
-								endP.setBackgroundColor(ASquare.selectedSquareColor);
-							}
-						} else {
-							endP = currSquare;
-							endOgColor = endP.getBackgroundColor();
-							endP.setBackgroundColor(ASquare.selectedSquareColor);
 						}
 					}
 
@@ -168,12 +171,14 @@ public class ChessControl {
 												.equalsIgnoreCase("w")) {
 									promoSquare = endP;
 									view_board.showPromotionType();
+									//END-POINT
 								} else if (!isWhiteMove()
 										&& pos.equals("1")
 										&& currPawn.getColor()
 												.equalsIgnoreCase("b")) {
 									promoSquare = endP;
 									view_board.showPromotionType();
+									//END-POINT
 								}
 							} else {
 								backend_board.incrementMoveCtr();
