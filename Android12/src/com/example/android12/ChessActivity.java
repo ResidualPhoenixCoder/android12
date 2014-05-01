@@ -7,16 +7,18 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.android12.Control.ChessControl;
 import com.example.android12.GUIBoard.GUIChessBoard;
+import com.example.android12.GUIBoard.IChessBoard;
 import com.example.android12.Model.ChessModel;
 
 public class ChessActivity extends ActionBarActivity{
 	private board backend_board;
-	private GUIChessBoard chess_board;
+	private IChessBoard chess_board;
 	private ChessControl chess_control;
 	private ChessModel chess_model;
 	
@@ -42,6 +44,19 @@ public class ChessActivity extends ActionBarActivity{
         
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.chess, menu);
+        for(int i = 0; i<menu.size();i++){
+        	if(((String)menu.getItem(i).getTitle()).equalsIgnoreCase("List Previous Games")){
+        		menu.getItem(i).setOnMenuItemClickListener(new OnMenuItemClickListener() {
+					
+					@Override
+					public boolean onMenuItemClick(MenuItem item) {
+						// TODO Auto-generated method stub
+						chess_board.showGameList();
+						return false;
+					}
+				});
+        	}
+        }
         return true;
     }
 
@@ -53,6 +68,10 @@ public class ChessActivity extends ActionBarActivity{
         int id = item.getItemId();
         if (id == R.id.action_settings) {
             return true;
+        }
+        
+        if(id==R.id.list_item){
+        	return true;
         }
         return super.onOptionsItemSelected(item);
     }

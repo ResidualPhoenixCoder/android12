@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 import Board.board;
 import Pieces.Piece;
 import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
@@ -25,6 +26,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.GridLayout.LayoutParams;
 
 import com.example.android12.R;
 import com.example.android12.Model.Game;
@@ -42,10 +44,12 @@ public class GUIChessBoard extends View implements IChessBoard {
 	private boolean inErrorState = false;
 	private AlertDialog.Builder promPieces;
 	private AlertDialog.Builder savePopUp;
+	private AlertDialog.Builder gamelistPopUp;
 	public static final CharSequence[] values = { "Queen", "Rook", "Knight",
 			"Bishop" };
 	private EditText et;
 	private ArrayAdapter<Move> ma;
+	private ArrayAdapter<Game> gamelistadapter;
 
 	//TODO There should be no reference to a board.  The view should be unknowledgeable about the control.
 	public GUIChessBoard(Context context, board b) {
@@ -71,6 +75,7 @@ public class GUIChessBoard extends View implements IChessBoard {
 				
 			}
 		});
+		
 	}
 	
 
@@ -177,6 +182,66 @@ public class GUIChessBoard extends View implements IChessBoard {
 			}
 		});
 	}
+	
+	public void setUpGameListPopUp(OnClickListener gameSelect){
+		gamelistPopUp = new AlertDialog.Builder(parent);
+		GridLayout gl = new GridLayout(parent);
+		gl.setColumnCount(1);
+		gl.setRowCount(2);
+		GridLayout.LayoutParams one = new GridLayout.LayoutParams();
+		one.rowSpec = GridLayout.spec(0);
+		one.columnSpec = GridLayout.spec(0);
+	
+		
+		GridLayout.LayoutParams two = new GridLayout.LayoutParams();
+		two.rowSpec = GridLayout.spec(1);
+		two.columnSpec = GridLayout.spec(0);
+
+		
+		Button sd = new Button(parent);
+		sd.setText("Sort List By Date");
+		sd.setTextSize(12);;
+//		sd.setLayoutParams(one);
+		
+		Button st = new Button(parent);
+		st.setText("Sort List By Title");
+		st.setTextSize(12);;
+//		st.setLayoutParams(two);
+		
+		
+		controls.put("Date Sort", sd);
+		controls.put("Title Sort", st);
+		
+		ListView lv = new ListView(parent);
+		
+		
+		LinearLayout ll1 = new LinearLayout(parent);
+		LinearLayout ll2 = new LinearLayout(parent);
+		
+		ll1.addView(sd);
+		ll1.addView(st);
+		ll2.addView(lv);
+		
+		ll1.setLayoutParams(one);
+		ll2.setLayoutParams(two);
+		
+		
+//		lv.setLayoutParams(three);
+		gamelistadapter = new ArrayAdapter<Game>(parent, android.R.layout.simple_list_item_1, gamesList);
+
+		lv.setAdapter(gamelistadapter);
+		
+		lv.setOnClickListener(gameSelect);
+		
+		gl.addView(ll1);
+		gl.addView(ll2);
+		gamelistPopUp.setView(gl);
+		
+		
+		
+	
+		
+	}
 
 	private void Draw(String[][] txtBoard) {
 		GridLayout chessBoardView = (GridLayout) ((ActionBarActivity) parent)
@@ -271,6 +336,10 @@ public class GUIChessBoard extends View implements IChessBoard {
 	
 	public void showSaveGame(){
 		savePopUp.show();
+	}
+	
+	public void showGameList(){
+		gamelistPopUp.show();
 	}
 
 	@Override
@@ -377,5 +446,9 @@ public class GUIChessBoard extends View implements IChessBoard {
 	public void refreshMoveData() {
 		// TODO Auto-generated method stub
 		ma.notifyDataSetChanged();
+	}
+	
+	public void refreshGameListData(){
+		gamelistadapter.notifyDataSetChanged();
 	}
 }

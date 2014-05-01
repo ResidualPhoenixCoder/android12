@@ -37,4 +37,9 @@ public class Game implements Serializable{
 	public List<Move> getMovesList() {
 		return this.movesList;
 	}
+	
+	@Override
+	public String toString(){
+		return title;
+	}
 }

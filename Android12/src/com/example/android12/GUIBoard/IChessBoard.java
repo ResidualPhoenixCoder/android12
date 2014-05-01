@@ -172,4 +172,10 @@ public interface IChessBoard {
 	 */
 	public String getGameSaveTitle();
 	
+	public void showGameList();
+		
+	public void setUpGameListPopUp(OnClickListener gameSelect);
+	
+	public void refreshGameListData();
+	
 }
