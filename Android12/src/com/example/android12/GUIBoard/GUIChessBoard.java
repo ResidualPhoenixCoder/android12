@@ -8,19 +8,24 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import Board.board;
+import Pieces.Pawn;
 import Pieces.Piece;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Display;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
+import android.widget.GridLayout.LayoutParams;
 
 import com.example.android12.R;
 import com.example.android12.Model.Game;
@@ -43,6 +48,8 @@ public class GUIChessBoard extends View implements IChessBoard {
 	//TODO There should be no reference to a board.  The view should be unknowledgeable about the control.
 	public GUIChessBoard(Context context, board b) {
 		super(context);
+		this.currMovesList = new ArrayList<Move>();
+		this.gamesList = new ArrayList<Game>();
 		this.parent = context;
 		this.squares = new Square[8][8];
 		this.b = b;
@@ -53,6 +60,7 @@ public class GUIChessBoard extends View implements IChessBoard {
 		this.chessBoardView.setColumnCount(8);
 		this.chessBoardView.setRowCount(8);
 		Draw(this.b.board);
+		setUpMoveList();
 		createControlButtons();
 		this.setUpPopUp();
 	}
@@ -94,18 +102,21 @@ public class GUIChessBoard extends View implements IChessBoard {
 				.getDefaultDisplay();
 		Point size = new Point();
 		display.getSize(size);
-		int width = size.x / controls.size();
-		int height = size.y / 9;
+		int width = size.x / (controls.size()+1);
+		int height = size.y / 10;
 		Iterator<Entry<String, Button>> it = controls.entrySet().iterator();
 		ActionBarActivity activity = (ActionBarActivity) parent;
 		LinearLayout controlRow = (LinearLayout) activity
 				.findViewById(R.id.button_controls);
+		int gap = (size.x-width*controls.size())/controls.size();
 		while (it.hasNext()) {
 			LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
 					width, height);
 			Map.Entry<String, Button> pairs = it.next();
+			params.rightMargin = gap;
 			pairs.getValue().setLayoutParams(params);
-			pairs.getValue().setTextSize(10);
+			pairs.getValue().setTextSize(9);
+			pairs.getValue().setBackgroundColor(Color.LTGRAY);
 			controlRow.addView(pairs.getValue());
 			it.remove();
 		}
@@ -114,6 +125,23 @@ public class GUIChessBoard extends View implements IChessBoard {
 	private void setUpMoveList() {
 		ListView movelist = (ListView) ((ActionBarActivity) parent)
 				.findViewById(R.id.move_list);
+		Display display = ((ActionBarActivity) parent).getWindowManager()
+				.getDefaultDisplay();
+		Point size = new Point();
+		display.getSize(size);
+		int width = size.x;
+		int height = size.y;
+
+		GridLayout.LayoutParams params = new GridLayout.LayoutParams();
+		if (width < height) {
+			params.height = height - width-height/5;
+		}
+		movelist.setLayoutParams(params);
+		movelist.requestLayout();
+		ArrayAdapter<Move> ma = new ArrayAdapter<>(parent,R.layout.mytextview, currMovesList);
+		movelist.setAdapter(ma);
+		movelist.setPadding(width/18, 0, 0, 5);
+		
 	}
 
 	private void Draw(String[][] txtBoard) {
@@ -160,7 +188,7 @@ public class GUIChessBoard extends View implements IChessBoard {
 				chessBoardView.addView(sq);
 				squares[i][j] = sq;
 			}
-			chessBoardView.setPadding(width / 18, 5, 0, 0);
+			chessBoardView.setPadding(width / 18, 5, 0, 5);
 		}
 
 	}

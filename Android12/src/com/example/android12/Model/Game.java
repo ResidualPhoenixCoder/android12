@@ -6,14 +6,28 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-public class Game implements Serializable, Comparable<Game>{
+public class Game implements Serializable{
 	private static final long serialVersionUID = 1L;
+	private String title;
 	private Date datePlayed;
 	private List<Move> movesList;
 	
 	public Game() {
+		this("");
+	}
+	
+	public Game(String title) {
+		this.title = title;
 		this.datePlayed = Calendar.getInstance().getTime();
 		this.movesList = new ArrayList<Move>();
+	}
+	
+	public void setTitle(String title) {
+		this.title = title;
+	}
+	
+	public String getTitle() {
+		return this.title;
 	}
 	
 	public Date getDatePlayed() {
@@ -22,11 +36,5 @@ public class Game implements Serializable, Comparable<Game>{
 	
 	public List<Move> getMovesList() {
 		return this.movesList;
-	}
-
-	@Override
-	public int compareTo(Game another) {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 }

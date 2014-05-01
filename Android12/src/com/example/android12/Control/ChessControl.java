@@ -56,7 +56,7 @@ public class ChessControl {
 				new OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						model.sortByDate();
+						model.sortGamesByDate();
 					}
 				});
 
@@ -64,7 +64,7 @@ public class ChessControl {
 				new OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						model.sortByTitle();
+						model.sortGamesByTitle();
 					}
 				});
 
