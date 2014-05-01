@@ -156,20 +156,10 @@ public interface IChessBoard {
 	 */
 	public void refreshMoveData();
 	
-	/**
-	 * Shows the save game dialog.
-	 */
 	public void showSaveGame();
 	
-	/**
-	 * Sets up the game save dialog.
-	 * @param onSave What to do when Save is clicked.
-	 */
 	public void setUpSavePopUp(DialogInterface.OnClickListener onSave);
 	
-	/**
-	 * @return Gets the Title of the game that needs to be saved.
-	 */
 	public String getGameSaveTitle();
 	
 }

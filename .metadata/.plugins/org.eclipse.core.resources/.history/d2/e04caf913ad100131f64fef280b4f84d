@@ -2,7 +2,6 @@ package com.example.android12.GUIBoard;
 
 import java.util.List;
 
-import android.content.DialogInterface;
 import android.view.View.OnClickListener;
 
 import com.example.android12.Model.Game;
@@ -155,21 +154,4 @@ public interface IChessBoard {
 	 * Refreshes the move list data.
 	 */
 	public void refreshMoveData();
-	
-	/**
-	 * Shows the save game dialog.
-	 */
-	public void showSaveGame();
-	
-	/**
-	 * Sets up the game save dialog.
-	 * @param onSave What to do when Save is clicked.
-	 */
-	public void setUpSavePopUp(DialogInterface.OnClickListener onSave);
-	
-	/**
-	 * @return Gets the Title of the game that needs to be saved.
-	 */
-	public String getGameSaveTitle();
-	
 }

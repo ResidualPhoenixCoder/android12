@@ -19,11 +19,9 @@ import android.view.Display;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.GridLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.android12.R;
@@ -44,7 +42,6 @@ public class GUIChessBoard extends View implements IChessBoard {
 	private AlertDialog.Builder savePopUp;
 	public static final CharSequence[] values = { "Queen", "Rook", "Knight",
 			"Bishop" };
-	private EditText et;
 	private ArrayAdapter<Move> ma;
 
 	//TODO There should be no reference to a board.  The view should be unknowledgeable about the control.
@@ -154,20 +151,8 @@ public class GUIChessBoard extends View implements IChessBoard {
 		
 	}
 	
-	public String getGameSaveTitle(){
-		return et.getText().toString();
-	}
-	
 	public void setUpSavePopUp(DialogInterface.OnClickListener onSave){
 		savePopUp = new AlertDialog.Builder(parent);
-		et = new EditText(parent);
-		TextView tv = new TextView(parent);
-		tv.setText("Title: ");
-		LinearLayout ll = new LinearLayout(parent);
-		ll.addView(tv);
-		ll.addView(et);
-		savePopUp.setTitle("Do you want to save the game?");
-		savePopUp.setView(ll);
 		savePopUp.setPositiveButton("Save", onSave);
 		savePopUp.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 			
@@ -176,6 +161,7 @@ public class GUIChessBoard extends View implements IChessBoard {
 				// TODO Auto-generated method stub
 			}
 		});
+		savePopUp.show();
 	}
 
 	private void Draw(String[][] txtBoard) {
@@ -267,10 +253,6 @@ public class GUIChessBoard extends View implements IChessBoard {
 
 	public void showPromotionType() {
 		promPieces.show();
-	}
-	
-	public void showSaveGame(){
-		savePopUp.show();
 	}
 
 	@Override
