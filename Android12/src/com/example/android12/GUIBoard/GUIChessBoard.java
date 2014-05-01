@@ -1,13 +1,17 @@
 package com.example.android12.GUIBoard;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import Board.board;
 import Pieces.Piece;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Point;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Display;
@@ -19,17 +23,24 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.android12.R;
-import com.example.android12.Control.ChessControl;
+import com.example.android12.Model.Game;
+import com.example.android12.Model.Move;
 
 public class GUIChessBoard extends View implements IChessBoard {
+	private List<Game> gamesList;
+	private List<Move> currMovesList;
+	
 	private HashMap<String, Button> controls;
 	private Square[][] squares;
 	private Context parent;
 	private GridLayout chessBoardView;
 	private board b;
 	private boolean inErrorState = false;
+	private AlertDialog.Builder promPieces;
+	public static final CharSequence[] values = { "Queen", "Rook", "Knight",
+			"Bishop" };
 
-	//TODO There should be no reference to a board.  The view should have no knowledge about the control.
+	//TODO There should be no reference to a board.  The view should be unknowledgeable about the control.
 	public GUIChessBoard(Context context, board b) {
 		super(context);
 		this.parent = context;
@@ -41,14 +52,13 @@ public class GUIChessBoard extends View implements IChessBoard {
 				.findViewById(R.id.chessboard);
 		this.chessBoardView.setColumnCount(8);
 		this.chessBoardView.setRowCount(8);
-		createControlButtons();
 		Draw(this.b.board);
+		createControlButtons();
+		this.setUpPopUp();
 	}
 
 	@Override
-	public void registerPositionAL(OnClickListener regular_al,
-			OnClickListener promotion_al) {
-		//TODO Register end squares that are viable for promotion when a pawn gets there.
+	public void registerPositionAL(OnClickListener regular_al) {
 		for (Square[] ar : squares) {
 			for (Square a : ar) {
 				a.setOnClickListener(regular_al);
@@ -59,9 +69,14 @@ public class GUIChessBoard extends View implements IChessBoard {
 	@Override
 	public void registerMajorBoardActionsAL(String name_of_action,
 			OnClickListener al) {
-		if(controls.containsKey(name_of_action)) {
+		if (controls.containsKey(name_of_action)) {
 			this.controls.get(name_of_action).setOnClickListener(al);
 		}
+	}
+
+	@Override
+	public void registerPromotionAction(DialogInterface.OnClickListener promote) {
+		this.promPieces.setItems(values, promote);
 	}
 
 	private void createControlButtons() {
@@ -153,7 +168,6 @@ public class GUIChessBoard extends View implements IChessBoard {
 	/*
 	 * PSEUDOCODE Check each square with the txt representation of the board. If
 	 * there is a difference, redraw the image.
-	 * 
 	 */
 	@Override
 	public void reDraw(String[][] s) {
@@ -175,10 +189,22 @@ public class GUIChessBoard extends View implements IChessBoard {
 					}
 
 					squares[i][j].setPiece(u);
+
 				}
 				squares[i][j].setChessImage();
 			}
 		}
+	}
+
+	private void setUpPopUp() {
+		final ArrayList<String> list = new ArrayList<String>();
+		promPieces = new AlertDialog.Builder(parent);
+		promPieces.setTitle("Pick a piece.");
+
+	}
+
+	public void showPromotionType() {
+		promPieces.show();
 	}
 
 	@Override
@@ -271,8 +297,12 @@ public class GUIChessBoard extends View implements IChessBoard {
 	}
 
 	@Override
-	public String getPromoteType() {
-		// TODO Auto-generated method stub
-		return null;
+	public void loadMovesList(List<Move> moveslist) {
+		this.currMovesList = moveslist;
+	}
+
+	@Override
+	public void loadGamesList(List<Game> gameslist) {
+		this.gamesList = gameslist;
 	}
 }

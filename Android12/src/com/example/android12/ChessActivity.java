@@ -12,11 +12,13 @@ import android.view.ViewGroup;
 
 import com.example.android12.Control.ChessControl;
 import com.example.android12.GUIBoard.GUIChessBoard;
+import com.example.android12.Model.ChessModel;
 
 public class ChessActivity extends ActionBarActivity{
 	private board backend_board;
 	private GUIChessBoard chess_board;
 	private ChessControl chess_control;
+	private ChessModel chess_model;
 	
     /* 
      * APPLICATION ENTRY-POINT
@@ -31,7 +33,8 @@ public class ChessActivity extends ActionBarActivity{
          */
         this.backend_board = new board();
         this.chess_board = new GUIChessBoard(this, backend_board);
-        this.chess_control = new ChessControl(backend_board, chess_board);
+        this.chess_model = new ChessModel();
+        this.chess_control = new ChessControl(backend_board, chess_board, chess_model);
     }
 
     @Override

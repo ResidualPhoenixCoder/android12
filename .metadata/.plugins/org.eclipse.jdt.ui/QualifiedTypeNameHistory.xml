@@ -12,7 +12,6 @@
 <fullyQualifiedTypeName name="android.view.View.OnClickListener"/>
 <fullyQualifiedTypeName name="android.webkit.WebIconDatabase.IconListener"/>
 <fullyQualifiedTypeName name="com.example.android12.GUIBoard.IChessBoard"/>
-<fullyQualifiedTypeName name="com.example.android12.GUIBoard.GUIChessBoard"/>
 <fullyQualifiedTypeName name="java.util.ArrayList"/>
 <fullyQualifiedTypeName name="android.widget.ImageButton"/>
 <fullyQualifiedTypeName name="com.example.android12.Control.ChessControl"/>
@@ -36,4 +35,7 @@
 <fullyQualifiedTypeName name="android.widget.ListView"/>
 <fullyQualifiedTypeName name="android.support.v7.app.ActionBarActivity"/>
 <fullyQualifiedTypeName name="com.example.android12.R.id"/>
+<fullyQualifiedTypeName name="android.support.v7.widget.PopupMenu"/>
+<fullyQualifiedTypeName name="android.support.v7.widget.PopupMenu.OnMenuItemClickListener"/>
+<fullyQualifiedTypeName name="com.example.android12.GUIBoard.GUIChessBoard"/>
 </qualifiedTypeNameHistroy>

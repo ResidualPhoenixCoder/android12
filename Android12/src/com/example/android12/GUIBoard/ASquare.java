@@ -1,16 +1,13 @@
 package com.example.android12.GUIBoard;
 
-import com.example.android12.R;
-
-import android.content.Context;
-import android.graphics.Color;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 import Board.board;
 import Pieces.Piece;
 import Pieces.Queen;
+import android.content.Context;
+import android.graphics.Color;
+import android.widget.ImageView;
+
+import com.example.android12.R;
 
 /**
  * @author Mark Labrador

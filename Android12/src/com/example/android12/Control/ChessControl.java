@@ -3,23 +3,30 @@ package com.example.android12.Control;
 import java.util.ArrayList;
 
 import Board.board;
+import Pieces.King;
 import Pieces.Pawn;
 import Pieces.Piece;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
 import com.example.android12.GUIBoard.ASquare;
+import com.example.android12.GUIBoard.GUIChessBoard;
 import com.example.android12.GUIBoard.IChessBoard;
+import com.example.android12.Model.ChessModel;
 import com.example.android12.Model.Game;
 import com.example.android12.Model.Move;
 
 public class ChessControl {
 	private board backend_board;
 	private IChessBoard view_board;
+	private ChessModel model;
 
 	private ASquare startP;
 	private ASquare endP;
+	private ASquare promoSquare;
 
 	private int startOgColor;
 	private int endOgColor;
@@ -29,9 +36,11 @@ public class ChessControl {
 
 	private Game currGame;
 
-	public ChessControl(board backend_board, IChessBoard view_board) {
+	public ChessControl(board backend_board, IChessBoard view_board,
+			ChessModel model) {
 		this.backend_board = backend_board;
 		this.view_board = view_board;
+		this.model = model;
 		this.currGame = new Game();
 		setup();
 	}
@@ -40,6 +49,27 @@ public class ChessControl {
 		/*
 		 * List of Actions +Forward +Backward +AI +Draw +Resign +Promotion
 		 */
+		view_board.loadMovesList(currGame.getMovesList());
+		view_board.loadGamesList(this.model.getGamesList());
+
+		view_board.registerMajorBoardActionsAL("Date Sort",
+				new OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						model.sortByDate();
+					}
+
+				});
+
+		view_board.registerMajorBoardActionsAL("Title Sort",
+				new OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						model.sortByTitle();
+					}
+				});
+
 		view_board.registerPositionAL(new OnClickListener() {
 			/* GENERAL MOVE */
 			@Override
@@ -91,9 +121,29 @@ public class ChessControl {
 						startP.setBackgroundColor(startOgColor);
 						startP = null;
 					} else if (endP == null) {
-						endP = currSquare;
-						endOgColor = endP.getBackgroundColor();
-						endP.setBackgroundColor(ASquare.selectedSquareColor);
+						Piece currPiece = currSquare.getPiece();
+						String tmpPos = currSquare.getPosition();
+						boolean legal = currPiece.isLegal(currSquare
+								.getPosition());
+						if (currPiece instanceof Pawn) {
+							if (((Pawn) currPiece).isEnPassant(tmpPos) || legal) {
+								endP = currSquare;
+								endOgColor = endP.getBackgroundColor();
+								endP.setBackgroundColor(ASquare.selectedSquareColor);
+							}
+						} else if (currPiece instanceof King) {
+							King tmpK = (King) currPiece;
+							if (tmpK.isKingSideCastle()
+									|| tmpK.isQueenSideCastle() || legal) {
+								endP = currSquare;
+								endOgColor = endP.getBackgroundColor();
+								endP.setBackgroundColor(ASquare.selectedSquareColor);
+							}
+						} else {
+							endP = currSquare;
+							endOgColor = endP.getBackgroundColor();
+							endP.setBackgroundColor(ASquare.selectedSquareColor);
+						}
 					}
 
 					/*
@@ -104,29 +154,64 @@ public class ChessControl {
 					if (startP != null && endP != null) {
 						if (move()) {
 							view_board.reDraw(backend_board.board);
+
+							/*
+							 * Check whether this is a valid promotion type.
+							 */
+							String pos = endP.getPosition().substring(1);
+							if (endP.getPiece() instanceof Pawn
+									&& (pos.equals("8") || pos.equals("1"))) {
+								Pawn currPawn = (Pawn) endP.getPiece();
+								if (isWhiteMove()
+										&& pos.equals("8")
+										&& currPawn.getColor()
+												.equalsIgnoreCase("w")) {
+									promoSquare = endP;
+									view_board.showPromotionType();
+								} else if (!isWhiteMove()
+										&& pos.equals("1")
+										&& currPawn.getColor()
+												.equalsIgnoreCase("b")) {
+									promoSquare = endP;
+									view_board.showPromotionType();
+								}
+							} else {
+								backend_board.incrementMoveCtr();
+								view_board.reDraw(backend_board.board);
+
+								startP.setBackgroundColor(startOgColor);
+								startP = null;
+
+								endP.setBackgroundColor(endOgColor);
+								endP = null;
+							}
 						}
-
-						startP.setBackgroundColor(startOgColor);
-						startP = null;
-
-						endP.setBackgroundColor(endOgColor);
-						endP = null;
 					}
 				}
 			}
-		},
-		/* PROMOTION */
-		new OnClickListener() {
+		});
+
+		/* PROMOTION COMPLETE */
+		view_board.registerPromotionAction(new Dialog.OnClickListener() {
 			@Override
-			public void onClick(View v) {
-				if(v instanceof ASquare) {
-					ASquare currSquare = (ASquare)v;
-					if(backend_board.getMoveCtr() % 2 == 0) {
-						promotePiece(currSquare, "w", backend_board.WhiteP);
-					} else {
-						promotePiece(currSquare, "b", backend_board.BlackP);
-					}
+			public void onClick(DialogInterface dialog, int which) {
+				String promoType = GUIChessBoard.values[which].toString();
+				if (isWhiteMove()) {
+					promotePiece(promoSquare, promoType, "w",
+							backend_board.WhiteP);
+				} else {
+					promotePiece(promoSquare, promoType, "b",
+							backend_board.BlackP);
 				}
+
+				backend_board.incrementMoveCtr();
+				view_board.reDraw(backend_board.board);
+
+				startP.setBackgroundColor(startOgColor);
+				startP = null;
+
+				endP.setBackgroundColor(endOgColor);
+				endP = null;
 			}
 		});
 
@@ -152,7 +237,7 @@ public class ChessControl {
 		view_board.registerMajorBoardActionsAL("AI", new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				if(isWhiteMove()) {
+				if (isWhiteMove()) {
 					autoMove(backend_board.WhiteP);
 				} else {
 					autoMove(backend_board.BlackP);
@@ -214,7 +299,7 @@ public class ChessControl {
 
 		if (startP != null && endP != null) {
 			/*
-			 * The move method will have a two string method formatting this
+			 * The move method will have a toString method formatting this
 			 * appropriately when it is listed. Just call Move.toString() method
 			 * on the instance.
 			 */
@@ -228,7 +313,6 @@ public class ChessControl {
 				result = moveSide(backend_board.BlackP);
 			}
 
-			
 			//TODO May need separate events for checks, checkmates, and stalemates.
 			if (backend_board.isBlackCheck()) {
 				if (backend_board.isBlackCheckMate()) {
@@ -252,23 +336,25 @@ public class ChessControl {
 		}
 		return result;
 	}
-	
-	private boolean promotePiece(ASquare currSquare, String color, ArrayList<Piece> pieces) {
+
+	private boolean promotePiece(ASquare currSquare, String promoType,
+			String color, ArrayList<Piece> pieces) {
 		boolean result = false;
-		for(Piece pc : pieces) {
-			if(pc.getPos().equalsIgnoreCase(currSquare.getPosition()) && pc instanceof Pawn) {
-				Pawn p = (Pawn)pc;
+		for (Piece pc : pieces) {
+			if (pc.getPos().equalsIgnoreCase(currSquare.getPosition())
+					&& pc instanceof Pawn) {
+				Pawn p = (Pawn) pc;
 				String promotePiece = "Q";
-				switch(view_board.getPromoteType().toLowerCase()) {
-					case "knight":
-						promotePiece = "K";
-						break;
-					case "bishop":
-						promotePiece = "B";
-						break;
-					case "rook":
-						promotePiece = "R";
-						break;
+				switch (promoType.toLowerCase()) {
+				case "knight":
+					promotePiece = "N";
+					break;
+				case "bishop":
+					promotePiece = "B";
+					break;
+				case "rook":
+					promotePiece = "R";
+					break;
 				}
 				p.promote(promotePiece, color, currSquare.getPosition());
 				result = true;
@@ -290,15 +376,15 @@ public class ChessControl {
 		}
 		return result;
 	}
-	
+
 	private boolean isWhiteMove() {
 		return backend_board.getMoveCtr() % 2 == 0;
 	}
-	
+
 	/*
 	 * Performs a valid move at random.
 	 */
 	private void autoMove(ArrayList<Piece> pieces) {
-		
+
 	}
 }

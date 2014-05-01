@@ -15,6 +15,8 @@ public class Move implements Serializable {
 
 	private boolean promotion;
 	private boolean drawOffered;
+	private boolean drawAccepted;
+	private boolean resign;
 
 	public Move(String startPos, Piece startPiece, String endPos, Piece endPiece) {
 		this.startPos = startPos;
@@ -47,7 +49,6 @@ public class Move implements Serializable {
 		this.drawOffered = drawOffered;
 	}
 
-
 	public Piece getStartPiece() {
 		return startPiece;
 	}
@@ -78,5 +79,34 @@ public class Move implements Serializable {
 
 	public void setEndPos(String endPos) {
 		this.endPos = endPos;
+	}
+	
+	public boolean isDrawAccepted() {
+		return drawAccepted;
+	}
+
+	public void setDrawAccepted(boolean drawAccepted) {
+		this.drawAccepted = drawAccepted;
+	}
+
+	public boolean isResign() {
+		return resign;
+	}
+
+	public void setResign(boolean resign) {
+		this.resign = resign;
+	}
+	
+	@Override
+	public String toString() {
+		String result = startPos + " " + endPos;
+		if(this.drawOffered) {
+			result += " draw?";
+		} else if(this.drawAccepted) {
+			result = "draw";
+		} else if(this.resign) {
+			result = "resign";
+		}
+		return result;	
 	}
 }

@@ -295,9 +295,13 @@ public class board {
 			result = move("b", a, b);
 		}
 
-		if (result)
-			moveCtr++;
+//		if (result)
+//			moveCtr++;
 		return result;
+	}
+	
+	public void incrementMoveCtr() {
+		this.moveCtr++;
 	}
 
 	/**

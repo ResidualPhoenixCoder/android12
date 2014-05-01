@@ -6,7 +6,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-public class Game implements Serializable {
+public class Game implements Serializable, Comparable<Game>{
 	private static final long serialVersionUID = 1L;
 	private Date datePlayed;
 	private List<Move> movesList;
@@ -22,5 +22,11 @@ public class Game implements Serializable {
 	
 	public List<Move> getMovesList() {
 		return this.movesList;
+	}
+
+	@Override
+	public int compareTo(Game another) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }
