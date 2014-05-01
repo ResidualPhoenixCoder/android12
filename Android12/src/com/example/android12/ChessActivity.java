@@ -33,7 +33,7 @@ public class ChessActivity extends ActionBarActivity{
          */
         this.backend_board = new board();
         this.chess_board = new GUIChessBoard(this, backend_board);
-        this.chess_model = new ChessModel();
+        this.chess_model = new ChessModel(this);
         this.chess_control = new ChessControl(backend_board, chess_board, chess_model);
     }
 
