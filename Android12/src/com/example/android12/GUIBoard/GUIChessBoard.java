@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import Board.board;
-import Pieces.Pawn;
 import Pieces.Piece;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -22,10 +21,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.LinearLayout;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
-import android.widget.GridLayout.LayoutParams;
 
 import com.example.android12.R;
 import com.example.android12.Model.Game;
@@ -60,7 +57,7 @@ public class GUIChessBoard extends View implements IChessBoard {
 		this.chessBoardView.setColumnCount(8);
 		this.chessBoardView.setRowCount(8);
 		Draw(this.b.board);
-		setUpMoveList();
+		//setUpMoveList();
 		createControlButtons();
 		this.setUpPopUp();
 	}
@@ -122,7 +119,8 @@ public class GUIChessBoard extends View implements IChessBoard {
 		}
 	}
 
-	private void setUpMoveList() {
+	@Override
+	public void setUpMoveList() {
 		ListView movelist = (ListView) ((ActionBarActivity) parent)
 				.findViewById(R.id.move_list);
 		Display display = ((ActionBarActivity) parent).getWindowManager()

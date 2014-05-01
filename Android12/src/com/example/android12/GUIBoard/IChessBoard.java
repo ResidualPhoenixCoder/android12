@@ -147,4 +147,6 @@ public interface IChessBoard {
 	
 	public void loadMovesList(List<Move> moveslist);
 	public void loadGamesList(List<Game> gameslist);
+
+	void setUpMoveList();
 }

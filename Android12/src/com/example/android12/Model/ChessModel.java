@@ -75,6 +75,10 @@ public class ChessModel {
 		obj_out.close();
 		f_out.close();
 	}
+	
+	public void addGame(Game game) {
+		this.games.add(game);
+	}
 
 	private class DateCmp implements Comparator<Game> {
 		@Override

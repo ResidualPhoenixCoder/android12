@@ -49,7 +49,8 @@ public class ChessControl {
 		/*
 		 * List of Actions +Forward +Backward +AI +Draw +Resign +Promotion
 		 */
-		view_board.loadMovesList(currGame.getMovesList());
+		view_board.loadMovesList(this.currGame.getMovesList());
+		view_board.setUpMoveList(); //THIS MUST BE CALLED AFTER A REFERENCE IS HANDED TO THE GUI.
 		view_board.loadGamesList(this.model.getGamesList());
 
 		view_board.registerMajorBoardActionsAL("Date Sort",
@@ -95,7 +96,8 @@ public class ChessControl {
 				 */
 				
 				//TODO Check for checkmates and stalemates on each move.
-
+				//TODO Double-check selection logic.
+				
 				/*
 				 * Side that is moving is determined by the backend board's move
 				 * counter.
@@ -299,6 +301,8 @@ public class ChessControl {
 		boolean result = false;
 
 		if (startP != null && endP != null) {
+			Piece ogStartP = startP.getPiece();
+			Piece ogEndP = endP.getPiece();
 			/*
 			 * The move method will have a toString method formatting this
 			 * appropriately when it is listed. Just call Move.toString() method
@@ -333,6 +337,10 @@ public class ChessControl {
 
 					}
 				}
+			}
+			
+			if(result) {
+				this.currGame.getMovesList().add(new Move(startP.getPosition(), ogStartP, endP.getPosition(), ogEndP));
 			}
 		}
 		return result;
