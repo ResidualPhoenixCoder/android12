@@ -41,12 +41,11 @@ public class GUIChessBoard extends View implements IChessBoard {
 	private AlertDialog.Builder promPieces;
 	public static final CharSequence[] values = { "Queen", "Rook", "Knight",
 			"Bishop" };
+	private ArrayAdapter<Move> ma;
 
 	//TODO There should be no reference to a board.  The view should be unknowledgeable about the control.
 	public GUIChessBoard(Context context, board b) {
 		super(context);
-		this.currMovesList = new ArrayList<Move>();
-		this.gamesList = new ArrayList<Game>();
 		this.parent = context;
 		this.squares = new Square[8][8];
 		this.b = b;
@@ -61,6 +60,7 @@ public class GUIChessBoard extends View implements IChessBoard {
 		createControlButtons();
 		this.setUpPopUp();
 	}
+	
 
 	@Override
 	public void registerPositionAL(OnClickListener regular_al) {
@@ -136,7 +136,7 @@ public class GUIChessBoard extends View implements IChessBoard {
 		}
 		movelist.setLayoutParams(params);
 		movelist.requestLayout();
-		ArrayAdapter<Move> ma = new ArrayAdapter<>(parent,R.layout.mytextview, currMovesList);
+		ma = new ArrayAdapter<>(parent,R.layout.mytextview, currMovesList);
 		movelist.setAdapter(ma);
 		movelist.setPadding(width/18, 0, 0, 5);
 		
@@ -330,5 +330,12 @@ public class GUIChessBoard extends View implements IChessBoard {
 	@Override
 	public void loadGamesList(List<Game> gameslist) {
 		this.gamesList = gameslist;
+	}
+
+
+	@Override
+	public void refreshMoveData() {
+		// TODO Auto-generated method stub
+		ma.notifyDataSetChanged();
 	}
 }

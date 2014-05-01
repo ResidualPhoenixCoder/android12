@@ -341,6 +341,7 @@ public class ChessControl {
 			
 			if(result) {
 				this.currGame.getMovesList().add(new Move(startP.getPosition(), ogStartP, endP.getPosition(), ogEndP));
+				view_board.refreshMoveData();
 			}
 		}
 		return result;

@@ -149,4 +149,9 @@ public interface IChessBoard {
 	public void loadGamesList(List<Game> gameslist);
 
 	void setUpMoveList();
+	
+	/**
+	 * Refreshes the move list data.
+	 */
+	public void refreshMoveData();
 }
