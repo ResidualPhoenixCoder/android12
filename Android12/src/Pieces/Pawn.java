@@ -139,31 +139,31 @@ public class Pawn implements Piece {
 
 	@Override
 	public String getColor() {
-		// TODO Auto-generated method stub
+
 		return color;
 	}
 
 	@Override
 	public String getPos() {
-		// TODO Auto-generated method stub
+
 		return pos;
 	}
 
 	@Override
 	public void setPos(String pos) {
-		// TODO Auto-generated method stub
+
 		this.pos = pos;
 	}
 
 	@Override
 	public void reduceMoveCount() {
-		// TODO Auto-generated method stub
+
 		movecount--;
 	}
 
 	@Override
 	public int getMoveCount() {
-		// TODO Auto-generated method stub
+
 		return movecount;
 	}
 

@@ -30,7 +30,7 @@ public class King implements Piece {
 
 	@Override
 	public boolean move(String pos) {
-		// TODO Auto-generated method stub
+
 		if (pos.length() != 2) {
 			return false;
 		}
@@ -109,43 +109,55 @@ public class King implements Piece {
 
 		return false;
 	}
-	
+
 	/*
 	 * @param currKingPos Position the king is currently at.
-	 * @param rookPos Position of the rook we want to check a castle possibility with.
+	 * 
+	 * @param rookPos Position of the rook we want to check a castle possibility
+	 * with.
+	 * 
 	 * @param kingPos Destination position to enable the castle.
+	 * 
 	 * @param pieces List of pieces for the respective side.
-	 * @return True, if castling is possible with the above params.  False, otherwise.
+	 * 
+	 * @return True, if castling is possible with the above params. False,
+	 * otherwise.
 	 */
-	private boolean castleCheck(String currKingPos, String rookPos, String kingPos, ArrayList<Piece> pieces) {
+	private boolean castleCheck(String currKingPos, String rookPos,
+			String kingPos, ArrayList<Piece> pieces) {
 		boolean result = false;
 		Rook r = null;
 		for (Piece p : pieces) {
 			if (p.getPos().equals(rookPos) && (p instanceof Rook)) {
 				r = (Rook) p;
 			}
-			
+
 			if (r != null) {
-				if(r.getPos().equalsIgnoreCase(rookPos) && r.getMoveCount() == 0 && currKingPos.equalsIgnoreCase(kingPos)) {
+				if (r.getPos().equalsIgnoreCase(rookPos)
+						&& r.getMoveCount() == 0
+						&& currKingPos.equalsIgnoreCase(kingPos)) {
 					result = true;
 				}
 			}
 		}
 		return result;
 	}
-	
+
 	/**
-	 * @param pos Position to move to and castle.
-	 * @return True, castling is possible to pos.  False, otherwise.
+	 * @param pos
+	 *            Position to move to and castle.
+	 * @return True, castling is possible to pos. False, otherwise.
 	 */
 	public boolean isCastle(String pos) {
 		boolean result = false;
-		if(this.movecount == 0) {
+		if (this.movecount == 0) {
 			//KINGSIDE AND QUEENSIDE CHECK
 			if (color.equalsIgnoreCase("w") && !b.isWhiteCheck()) {
-				result = castleCheck(pos, "h1", "g1", b.WhiteP) || castleCheck(pos, "a1", "c1", b.WhiteP);
+				result = castleCheck(pos, "h1", "g1", b.WhiteP)
+						|| castleCheck(pos, "a1", "c1", b.WhiteP);
 			} else if (color.equalsIgnoreCase("b") && !b.isBlackCheck()) {
-				result = castleCheck(pos, "h8", "g8", b.BlackP) || castleCheck(pos, "a8", "c8", b.BlackP);
+				result = castleCheck(pos, "h8", "g8", b.BlackP)
+						|| castleCheck(pos, "a8", "c8", b.BlackP);
 			}
 		}
 		return result;
@@ -384,13 +396,13 @@ public class King implements Piece {
 
 	@Override
 	public String getColor() {
-		// TODO Auto-generated method stub
+
 		return color;
 	}
 
 	@Override
 	public String getPos() {
-		// TODO Auto-generated method stub
+
 		return pos;
 	}
 
@@ -400,19 +412,19 @@ public class King implements Piece {
 
 	@Override
 	public void setPos(String pos) {
-		// TODO Auto-generated method stub
+
 		this.pos = pos;
 	}
 
 	@Override
 	public void reduceMoveCount() {
-		// TODO Auto-generated method stub
+
 		movecount--;
 	}
 
 	@Override
 	public int getMoveCount() {
-		// TODO Auto-generated method stub
+
 		return movecount;
 	}
 }

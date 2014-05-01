@@ -93,13 +93,8 @@ public class ChessControl {
 				 * 
 				 * Basically, call move.
 				 */
-
-				/*
-				 * TODO FEATURES +After clicking the first button, disable
-				 * non-board buttons to prevent confusion. +After a successful
-				 * move is made or button is unselected, re-enable all other
-				 * non-board functions.
-				 */
+				
+				//TODO Check for checkmates and stalemates on each move.
 
 				/*
 				 * Side that is moving is determined by the backend board's move
@@ -110,12 +105,13 @@ public class ChessControl {
 
 					if (startP == null) { //INITIAL SELECTION
 						Piece currPiece = currSquare.getPiece();
-						if (currPiece != null && isWhiteMove() ? currPiece
-								.getColor().equalsIgnoreCase("w") : currPiece
-								.getColor().equalsIgnoreCase("b")) {
-							startP = currSquare;
-							startOgColor = startP.getBackgroundColor();
-							startP.setBackgroundColor(ASquare.selectedSquareColor);
+						if (currPiece != null ) {
+							boolean localResult = isWhiteMove() ? currPiece.getColor().equalsIgnoreCase("w") : currPiece.getColor().equalsIgnoreCase("b");
+							if(localResult) {
+								startP = currSquare;
+								startOgColor = startP.getBackgroundColor();
+								startP.setBackgroundColor(ASquare.selectedSquareColor);
+							}
 						}
 					} else if (startP.getPosition().equals(
 							currSquare.getPosition())) { //DE-SELECTION
@@ -255,8 +251,8 @@ public class ChessControl {
 			@Override
 			public void onClick(View v) {
 				/*
-				 * TODO Check whether this is an offer or accept of a draw.
-				 * Keywords: +Offer Draw +Accept Draw
+				 * TODO [TESTING NEEDED] Check whether this is an offer or accept of a draw.
+				 * Keywords: +Offer Draw +Accept Draw 
 				 */
 				if (v instanceof Button) {
 					Button drawBtn = (Button) v;

@@ -27,7 +27,7 @@ public class Knight implements Piece {
 	}
 	@Override
 	public boolean move(String pos) {
-		// TODO Auto-generated method stub
+		
 		if(pos.length()!=2){
 			return false;
 		}
@@ -47,7 +47,7 @@ public class Knight implements Piece {
 
 	@Override
 	public boolean isLegal(String pos) {
-		// TODO Auto-generated method stub
+		
 		String current = this.pos;
 		String moveTo = pos;
 		int c1 = board.convert(current.substring(0,1));
@@ -76,13 +76,13 @@ public class Knight implements Piece {
 
 	@Override
 	public String getColor() {
-		// TODO Auto-generated method stub
+		
 		return color;
 	}
 
 	@Override
 	public String getPos() {
-		// TODO Auto-generated method stub
+		
 		return pos;
 	}
 	
@@ -93,20 +93,20 @@ public class Knight implements Piece {
 	
 	@Override
 	public void setPos(String pos) {
-		// TODO Auto-generated method stub
+		
 		this.pos = pos;
 	}
 
 
 	@Override
 	public void reduceMoveCount() {
-		// TODO Auto-generated method stub
+		
 		movecount--;	
 	}
 
 	@Override
 	public int getMoveCount() {
-		// TODO Auto-generated method stub
+		
 		return movecount;
 	}
 	public ArrayList<String> attackingPositions(){

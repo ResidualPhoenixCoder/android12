@@ -236,8 +236,6 @@ public class board {
 	}
 
 	/**
-	 * TODO Do we need to hand it the piece? Suggestion: We could just hand it
-	 * the color of the side we want to perform the castle for.
 	 * 
 	 * @param p
 	 *            The king piece.
