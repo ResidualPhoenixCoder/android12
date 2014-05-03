@@ -6,11 +6,14 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import android.R;
+
 public class Game implements Serializable{
 	private static final long serialVersionUID = 1L;
 	private String title;
 	private Date datePlayed;
 	private List<Move> movesList;
+	private CharSequence gameStringList;
 	
 	public Game() {
 		this("");
@@ -37,6 +40,8 @@ public class Game implements Serializable{
 	public List<Move> getMovesList() {
 		return this.movesList;
 	}
+	
+
 	
 	@Override
 	public String toString(){

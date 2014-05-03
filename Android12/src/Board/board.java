@@ -43,7 +43,6 @@ public class board {
 			}
 		}
 		moveCtr = 0;
-		load();
 	}
 
 	/**

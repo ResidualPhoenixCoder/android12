@@ -1,11 +1,14 @@
 package com.example.android12.Control;
 
+import java.nio.channels.AlreadyConnectedException;
 import java.util.ArrayList;
+import java.util.List;
 
 import Board.board;
 import Pieces.King;
 import Pieces.Pawn;
 import Pieces.Piece;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.view.View;
@@ -30,9 +33,11 @@ public class ChessControl {
 
 	private int startOgColor;
 	private int endOgColor;
+	private int moveNumber;
 
 	private boolean draw;
 	private boolean resign;
+	private boolean oldGame = false;
 
 	private Game currGame;
 
@@ -68,6 +73,39 @@ public class ChessControl {
 						model.sortGamesByTitle();
 					}
 				});
+		
+		view_board.setUpSavePopUp(new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// TODO Auto-generated method stub
+				String gametitle = view_board.getGameSaveTitle();
+				boolean b = true;
+				for(Game g : model.getGamesList()){
+					if(g.getTitle().equalsIgnoreCase(gametitle)){
+						view_board.displayErrorMsg("Game not saved. Game with that title already exists.");
+						view_board.hideErrorMsg();
+						b = false;
+					}
+				}
+				if(b){
+					currGame.setTitle(gametitle);
+					model.addGame(currGame);	
+					dialog.dismiss();
+				}
+			}
+		});
+		
+		view_board.setUpGameListPopUp(new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// TODO Auto-generated method stub
+				currGame = model.getGamesList().get(which);
+				prepareLoadGame();
+				dialog.dismiss();
+			}
+		});
 
 		view_board.registerPositionAL(new OnClickListener() {
 			/* GENERAL MOVE */
@@ -188,7 +226,16 @@ public class ChessControl {
 								endP.setBackgroundColor(endOgColor);
 								endP = null;
 							}
+							moveNumber++;
+						}	
+						else{
+							startP.setBackgroundColor(startOgColor);
+							startP = null;
+
+							endP.setBackgroundColor(endOgColor);
+							endP = null;
 						}
+						
 					}
 				}
 			}
@@ -224,6 +271,31 @@ public class ChessControl {
 					@Override
 					public void onClick(View v) {
 						//TODO Trigger forward movement based on the list or bring to current position.
+						List<Move> moves = currGame.getMovesList();
+						if(moveNumber==moves.size()){
+							view_board.disableForward();
+						}
+						else{
+							
+							Move curr = moves.get(moveNumber);
+							
+							for(ASquare[] ar : view_board.getSquares()){
+								for(ASquare s : ar){
+									if(s.getPosition().equalsIgnoreCase(curr.getStartPos())){
+										startP = s;
+									}
+									else if(s.getPosition().equalsIgnoreCase(curr.getEndPos())){
+										endP = s;
+									}
+								}
+							}
+							
+							move();
+							backend_board.incrementMoveCtr();
+							view_board.reDraw(backend_board.board);
+							moveNumber++;
+						}
+						
 					}
 				});
 
@@ -280,6 +352,7 @@ public class ChessControl {
 
 	/*
 	 * Resets the entire application to prepare for a new game.
+	 * 
 	 */
 	//TODO Need to save current game, if this is ending a game.
 	private void new_game() {
@@ -321,25 +394,32 @@ public class ChessControl {
 			//TODO May need separate events for checks, checkmates, and stalemates.
 			if (backend_board.isBlackCheck()) {
 				if (backend_board.isBlackCheckMate()) {
-
+					if(!oldGame){
+						view_board.showSaveGame();
+					}
 				}
 			} else if (backend_board.isWhiteCheck()) {
 				if (backend_board.isWhiteCheckMate()) {
-
-				}
+					if(!oldGame){
+						view_board.showSaveGame();
+					}				}
 			} else {
 				if (backend_board.getMoveCtr() % 2 == 0) {
 					if (backend_board.isWhiteStaleMate()) {
-
+						if(!oldGame){
+							view_board.showSaveGame();
+						}
 					}
 				} else {
 					if (backend_board.isBlackStaleMate()) {
-
+						if(!oldGame){
+							view_board.showSaveGame();
+						}
 					}
 				}
 			}
 			
-			if(result) {
+			if(result&&!oldGame) {
 				this.currGame.getMovesList().add(new Move(startP.getPosition(), ogStartP, endP.getPosition(), ogEndP));
 				view_board.refreshMoveData();
 			}
@@ -396,5 +476,40 @@ public class ChessControl {
 	 */
 	private void autoMove(ArrayList<Piece> pieces) {
 
+	}
+	
+	/**
+	 * Loads a previous game.
+	 */
+	private void prepareLoadGame(){
+		oldGame = true;
+		moveNumber = 0;
+		view_board.setDefaultState();
+		view_board.disableBoard();
+		view_board.disableAI();
+		view_board.disableBackward();
+		view_board.disableDraw();
+		view_board.disableResign();
+		view_board.enableForward();
+		
+		view_board.loadMovesList(currGame.getMovesList());;
+		view_board.setUpMoveList();
+		
+	}
+	
+	public void reset(){
+		currGame = new Game();
+		moveNumber = 0;
+		startP = null;
+		endP = null;
+		promoSquare = null;
+		draw = false;
+		oldGame = false;
+		resign = false;
+		setup();
+	}
+	
+	public boolean isOldGame(){
+		return oldGame;
 	}
 }

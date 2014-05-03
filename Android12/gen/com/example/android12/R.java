@@ -1131,11 +1131,13 @@ containing a value of this type.
         public static final int middle=0x7f050012;
         public static final int move_list=0x7f05003f;
         public static final int never=0x7f050009;
+        public static final int new_Game=0x7f050042;
         public static final int none=0x7f050010;
         public static final int normal=0x7f050000;
         public static final int progress_circular=0x7f050018;
         public static final int progress_horizontal=0x7f050019;
         public static final int radio=0x7f05002f;
+        public static final int save_Game=0x7f050043;
         public static final int search_badge=0x7f050032;
         public static final int search_bar=0x7f050031;
         public static final int search_button=0x7f050033;
@@ -1261,7 +1263,9 @@ containing a value of this type.
         public static final int action_settings=0x7f0a000f;
         public static final int app_name=0x7f0a000d;
         public static final int hello_world=0x7f0a000e;
+        public static final int new_Game=0x7f0a0011;
         public static final int prev_games=0x7f0a0010;
+        public static final int save_Game=0x7f0a0012;
     }
     public static final class style {
         /** 

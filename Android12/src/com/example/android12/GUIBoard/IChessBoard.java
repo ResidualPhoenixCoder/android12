@@ -2,8 +2,10 @@ package com.example.android12.GUIBoard;
 
 import java.util.List;
 
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView.OnItemClickListener;
 
 import com.example.android12.Model.Game;
 import com.example.android12.Model.Move;
@@ -174,8 +176,11 @@ public interface IChessBoard {
 	
 	public void showGameList();
 		
-	public void setUpGameListPopUp(OnClickListener gameSelect);
+	public void setUpGameListPopUp(DialogInterface.OnClickListener gameSelect);
 	
 	public void refreshGameListData();
-	
+		
+	public void disableBoard();
+	public void test();
+
 }
