@@ -350,7 +350,7 @@ public class ChessControl {
 					@Override
 					public void onClick(View v) {
 						// TODO Trigger backward movement based on the list or until original board positions are found.
-						if(!backend_board.isUndoState&&ChessControl.this.currGame.getMovesList().size()>0){
+						if(!backend_board.isUndoState){
 							if(startP!=null){
 								startP.resetBackgroundColor();
 								startP=null;
