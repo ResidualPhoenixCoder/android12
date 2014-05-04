@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.android12.Control.ChessControl;
 import com.example.android12.GUIBoard.GUIChessBoard;
@@ -39,7 +40,14 @@ public class ChessActivity extends ActionBarActivity{
         this.backend_board.load();
         this.chess_board = new GUIChessBoard(this, backend_board);
         this.chess_model = new ChessModel(this);
+        try {
+			this.chess_model.loadGames();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			Toast.makeText(this, "Error loading saved games", Toast.LENGTH_LONG).show();
+		}
         this.chess_control = new ChessControl(backend_board, chess_board, chess_model);
+        
     }
 
     @Override

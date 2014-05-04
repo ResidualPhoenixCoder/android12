@@ -39,7 +39,7 @@ public class Knight implements Piece {
 				
 
 //				return b.move(toString(),og, pos);
-				return b.move(og, pos);
+				return b.move(this,og, pos);
 
 			}
 		return false;

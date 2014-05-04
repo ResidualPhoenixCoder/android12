@@ -40,6 +40,7 @@ public class ChessControl {
 	private boolean oldGame = false;
 
 	private Game currGame;
+	private Move currMove;
 
 	public ChessControl(board backend_board, IChessBoard view_board,
 			ChessModel model) {
@@ -91,6 +92,13 @@ public class ChessControl {
 				if(b){
 					currGame.setTitle(gametitle);
 					model.addGame(currGame);	
+					try {
+						model.saveGames();
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						view_board.displayErrorMsg("Error while saving game");
+						view_board.hideErrorMsg();
+					}
 					dialog.dismiss();
 				}
 			}
@@ -99,11 +107,40 @@ public class ChessControl {
 		view_board.setUpGameListPopUp(new DialogInterface.OnClickListener() {
 			
 			@Override
-			public void onClick(DialogInterface dialog, int which) {
+			public void onClick(DialogInterface dialog, final int which) {
 				// TODO Auto-generated method stub
-				currGame = model.getGamesList().get(which);
-				prepareLoadGame();
-				dialog.dismiss();
+				AlertDialog.Builder b = new AlertDialog.Builder(view_board.getParentContext());
+				b.setTitle("What would you like to do with the game: "+model.getGamesList().get(which).getTitle()+"?");
+				b.setPositiveButton("Load Game", new DialogInterface.OnClickListener() {
+					
+					@Override
+					public void onClick(DialogInterface dialog, int i) {
+						// TODO Auto-generated method stub
+						currGame = model.getGamesList().get(which);
+						prepareLoadGame();
+						dialog.dismiss();
+					}
+				});
+				
+				b.setNegativeButton("Delete Game", new DialogInterface.OnClickListener() {
+					
+					@Override
+					public void onClick(DialogInterface dialog, int i) {
+						// TODO Auto-generated method stub
+						model.getGamesList().remove(which);
+						try {
+							model.saveGames();
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							view_board.displayErrorMsg("Error while deleting game");
+							view_board.hideErrorMsg();
+						}
+						dialog.dismiss();
+					}
+				});
+				
+				b.show();
+			
 			}
 		});
 
@@ -157,7 +194,15 @@ public class ChessControl {
 							currSquare.getPosition())) { //DE-SELECTION
 						startP.setBackgroundColor(startOgColor);
 						startP = null;
-					} else if (endP == null) { //END SELECTION
+					} 
+					else if(currSquare.getPiece()!=null &&startP.getPiece().getColor().equalsIgnoreCase(
+							currSquare.getPiece().getColor())){
+						startP.setBackgroundColor(startOgColor);
+						startP = currSquare;
+						startOgColor = startP.getBackgroundColor();
+						startP.setBackgroundColor(ASquare.selectedSquareColor);
+					}
+					else if (endP == null) { //END SELECTION
 						Piece currPiece = startP.getPiece();
 						if (currPiece != null) {
 							String tmpPos = currSquare.getPosition();
@@ -300,11 +345,23 @@ public class ChessControl {
 				});
 
 		/* BACKWARD */
-		view_board.registerMajorBoardActionsAL("Backward",
+		view_board.registerMajorBoardActionsAL("Undo",
 				new OnClickListener() {
 					@Override
 					public void onClick(View v) {
 						// TODO Trigger backward movement based on the list or until original board positions are found.
+						if(!backend_board.isUndoState){
+							if(startP!=null){
+								startP.resetBackgroundColor();
+								startP=null;
+							}
+							backend_board.undo();
+							ChessControl.this.currGame.getMovesList().remove(ChessControl.this.currGame.getMovesList().size()-1);
+							view_board.refreshMoveData();
+							view_board.reDraw(backend_board.board);
+							view_board.declineDraw();draw = false;
+							moveNumber--;
+						}
 					}
 				});
 
@@ -313,9 +370,13 @@ public class ChessControl {
 			@Override
 			public void onClick(View v) {
 				if (isWhiteMove()) {
+					view_board.disableAI();
 					autoMove(backend_board.WhiteP);
+					view_board.enableAI();
 				} else {
+					view_board.disableAI();
 					autoMove(backend_board.BlackP);
+					view_board.enableAI();
 				}
 			}
 		});
@@ -333,9 +394,19 @@ public class ChessControl {
 					if (drawBtn.getText().toString()
 							.equalsIgnoreCase("Offer Draw")) {
 						draw = true;
+						view_board.disableDraw();
+						view_board.totalAI();
 					} else if (drawBtn.getText().toString()
 							.equalsIgnoreCase("Accept Draw")) {
-						new_game();
+						currMove = new Move("", null, "", null);
+						currMove.setDrawAccepted(true);
+						ChessControl.this.currGame.getMovesList().add(currMove);
+						view_board.refreshMoveData();
+						view_board.disableBoard();
+						view_board.showSaveGame();
+						view_board.disableAI();
+						view_board.disableDraw();
+						view_board.disableResign();
 					}
 				}
 			}
@@ -345,22 +416,25 @@ public class ChessControl {
 		view_board.registerMajorBoardActionsAL("Resign", new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				new_game();
+				currMove = new Move("", null, "", null);
+				if(moveNumber%2==0){
+					currMove.setResign(true,"Black Wins");
+				}
+				else{
+					currMove.setResign(true,"White Wins");
+				}
+
+				ChessControl.this.currGame.getMovesList().add(currMove);
+				view_board.refreshMoveData();
+				view_board.disableBoard();
+				view_board.showSaveGame();
+				view_board.disableAI();
+				view_board.disableDraw();
+				view_board.disableResign();
 			}
 		});
 	}
 
-	/*
-	 * Resets the entire application to prepare for a new game.
-	 * 
-	 */
-	//TODO Need to save current game, if this is ending a game.
-	private void new_game() {
-		backend_board = new board();
-		view_board.setDefaultState();
-		view_board.reDraw(backend_board.board);
-		currGame = new Game();
-	}
 
 	/*
 	 * PSEUDOCODE
@@ -372,7 +446,7 @@ public class ChessControl {
 	 */
 	private boolean move() {
 		boolean result = false;
-
+		view_board.declineDraw();
 		if (startP != null && endP != null) {
 			Piece ogStartP = startP.getPiece();
 			Piece ogEndP = endP.getPiece();
@@ -381,7 +455,7 @@ public class ChessControl {
 			 * appropriately when it is listed. Just call Move.toString() method
 			 * on the instance.
 			 */
-			Move currMove = new Move(startP.getPosition(), startP.getPiece(),
+			currMove = new Move(startP.getPosition(), startP.getPiece(),
 					endP.getPosition(), endP.getPiece());
 
 			//Moves appropriate side depending on whose turn it is.
@@ -393,35 +467,60 @@ public class ChessControl {
 
 			//TODO May need separate events for checks, checkmates, and stalemates.
 			if (backend_board.isBlackCheck()) {
+				currMove.setCheck(true);
 				if (backend_board.isBlackCheckMate()) {
 					if(!oldGame){
 						view_board.showSaveGame();
+						currMove.setCheckmate(true);
+						view_board.disableAI();
+						view_board.disableDraw();
+						view_board.disableResign();
 					}
 				}
 			} else if (backend_board.isWhiteCheck()) {
+				currMove.setCheck(true);
 				if (backend_board.isWhiteCheckMate()) {
 					if(!oldGame){
 						view_board.showSaveGame();
-					}				}
+						currMove.setCheckmate(true);
+						view_board.disableAI();
+						view_board.disableDraw();
+						view_board.disableResign();
+					}				
+				}
 			} else {
 				if (backend_board.getMoveCtr() % 2 == 0) {
 					if (backend_board.isWhiteStaleMate()) {
 						if(!oldGame){
 							view_board.showSaveGame();
+							currMove.setStalemate(true);
+							view_board.disableAI();
+							view_board.disableDraw();
+							view_board.disableResign();
 						}
 					}
 				} else {
 					if (backend_board.isBlackStaleMate()) {
 						if(!oldGame){
 							view_board.showSaveGame();
+							currMove.setStalemate(true);
+							view_board.disableAI();
+							view_board.disableDraw();
+							view_board.disableResign();
 						}
 					}
 				}
 			}
 			
 			if(result&&!oldGame) {
-				this.currGame.getMovesList().add(new Move(startP.getPosition(), ogStartP, endP.getPosition(), ogEndP));
+				currMove.setDrawOffered(draw);
+				view_board.enableDraw();
+				this.currGame.getMovesList().add(currMove);
 				view_board.refreshMoveData();
+				if(draw){
+					view_board.offerDraw();
+				}
+				draw = false;
 			}
 		}
 		return result;
@@ -475,8 +574,144 @@ public class ChessControl {
 	 * Performs a valid move at random.
 	 */
 	private void autoMove(ArrayList<Piece> pieces) {
+		int c = pieces.size();
+		here:
+		while(true){
+			if(backend_board.isWhiteCheck()||backend_board.isBlackCheck()){
+				Piece p = null;
+				for(Piece p2: pieces){
+					if(p2 instanceof King){
+						p = p2;
+					}
+				}
+				if(p!=null){
+					for(String s : p.attackingPositions()){
+						for(ASquare[] ar : view_board.getSquares()){
+							for(ASquare sq : ar){
+								if(sq.getPosition().equalsIgnoreCase(p.getPos())){
+									startP = sq;
+								}
+								if(sq.getPosition().equalsIgnoreCase(s)){
+									endP = sq;
+								}
+							}
+						}
+						if(move()){
+							moveNumber++;
+							backend_board.incrementMoveCtr();
+							view_board.reDraw(backend_board.board);
+							startP = null;
+							endP = null;
+							break here;
 
-	}
+					}
+						
+					}
+				}
+				
+				
+				
+			}
+			
+				try{
+					int rand = (int)( Math.random()*(c-1));
+					Piece p = pieces.get(rand);
+					boolean pm = false;
+					if(p instanceof Pawn){
+						pm = true;
+						String current = p.getPos();
+						int c1 = board.convert(current.substring(0,1));
+						int r1 = Integer.parseInt(current.substring(1,2))-1;
+						ArrayList<String> list = new ArrayList<String>();
+						
+						for(int i = 0;i<8;i++){
+							for( int j = 0; j<8;j++){
+								String p2 = board.let[i]+(j+1);
+								if(p.isLegal(p2)){
+									list.add(p2);
+								}
+							}
+						}
+						if(list.size()==0){
+							pm = false;
+						}
+						
+						int rand2 = (int) Math.random()*(list.size()-1);
+						for(ASquare[] ar : view_board.getSquares()){
+							for(ASquare s : ar){
+								if(s.getPosition().equalsIgnoreCase(p.getPos())){
+									startP = s;
+								}
+								if(rand2>list.size()-1){
+									continue here;
+								}
+								if(s.getPosition().equalsIgnoreCase(list.get(rand2))){
+									endP = s;
+								}
+							}
+						}
+						
+					}
+					else if(!pm){
+						if(p.attackingPositions().size()==0){
+							continue here;
+						}
+						int rand2 = (int) Math.random()*(p.attackingPositions().size()-1);
+						for(ASquare[] ar : view_board.getSquares()){
+							for(ASquare s : ar){
+								if(s.getPosition().equalsIgnoreCase(p.getPos())){
+									startP = s;
+								}
+								if(rand2>p.attackingPositions().size()-1){
+									continue here;
+								}
+								if(s.getPosition().equalsIgnoreCase(p.attackingPositions().get(rand2))){
+									endP = s;
+								}
+							}
+						}
+					}
+
+					if(move()){
+						String pos = endP.getPosition().substring(1);
+						if (endP.getPiece() instanceof Pawn
+								&& (pos.equals("8") || pos.equals("1"))) {
+							Pawn currPawn = (Pawn) endP.getPiece();
+							if (isWhiteMove()
+									&& pos.equals("8")
+									&& currPawn.getColor()
+											.equalsIgnoreCase("w")) {
+								promoSquare = endP;
+								view_board.showPromotionType();
+								//END-POINT
+							} else if (!isWhiteMove()
+									&& pos.equals("1")
+									&& currPawn.getColor()
+											.equalsIgnoreCase("b")) {
+								promoSquare = endP;
+								view_board.showPromotionType();
+								//END-POINT
+							}
+
+					}
+
+						moveNumber++;
+						backend_board.incrementMoveCtr();
+						view_board.reDraw(backend_board.board);
+						startP = null;
+						endP = null;
+						break here;
+
+				}
+				}catch (IndexOutOfBoundsException e) {
+						// TODO: handle exception
+					continue here;
+					}
+			
+			}
+		
+		}
+	
 	
 	/**
 	 * Loads a previous game.

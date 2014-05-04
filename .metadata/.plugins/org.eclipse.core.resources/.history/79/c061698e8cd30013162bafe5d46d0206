@@ -1,0 +1,837 @@
+package Board;
+
+import java.util.ArrayList;
+
+import Pieces.Bishop;
+import Pieces.King;
+import Pieces.Knight;
+import Pieces.Pawn;
+import Pieces.Piece;
+import Pieces.Queen;
+import Pieces.Rook;
+
+/**
+ * @author Bharath Kannan Board is initialized as a String multidimensional
+ *         array. All game operations are implemented through here.
+ */
+public class board {
+
+	private int moveCtr;
+
+	public int getMoveCtr() {
+		return moveCtr;
+	}
+
+	public String[][] board = new String[8][8];
+	
+	public String[][] prevState;
+	public String prevMoveStart;
+	public String prevMoveEnd;
+	public String prevPiece;
+	public Piece prevTakenPiece;
+	
+	public static String[] let = { "a", "b", "c", "d", "e", "f", "g", "h" };
+
+	//One of these sets of arrays is for pieces left on the board, and pieces total.
+	public ArrayList<Piece> WhiteP = new ArrayList<Piece>();
+	public ArrayList<Piece> BlackP = new ArrayList<Piece>();
+
+	ArrayList<Piece> wp = new ArrayList<Piece>();
+	ArrayList<Piece> bp = new ArrayList<Piece>();
+
+	public board() {
+		for (int i = 0; i < 8; i++) {
+			for (int j = 0; j < 8; j++) {
+				if ((i + j) % 2 == 0) {
+					board[i][j] = "##";
+				} else {
+					board[i][j] = "  ";
+				}
+			}
+		}
+		moveCtr = 0;
+	}
+
+	/**
+	 * @param letter
+	 *            The column header the piece is coming from.
+	 * @return The number representing the inserted column header.
+	 */
+	public static int convert(String letter) {
+		for (int i = 0; i < let.length; i++) {
+			if (letter.equalsIgnoreCase(let[i])) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	/**
+	 * Setup the board with all the pieces.
+	 * 
+	 * White is at the top of the board: Occupies rows 0 and 1. Black is at the
+	 * bottom of the board: Occupies rows 6 and 7.
+	 */
+	public void load() {
+		int c = 0;
+		WhiteP.clear();
+		wp.clear();
+		BlackP.clear();
+		bp.clear();
+
+		for (int i = 0; i < board[1].length; i++) {
+			WhiteP.add(new Pawn(this, "w", let[c] + "2"));
+			board[1][i] = "wp";
+
+			c++;
+		}
+		c = 0;
+		for (int i = 0; i < board[1].length; i++) {
+			BlackP.add(new Pawn(this, "b", let[c] + "7"));
+			board[6][i] = "bp";
+
+			c++;
+		}
+
+		Knight wN = new Knight(this, "w", "b1");
+		board[0][1] = "wN";
+		Knight wN2 = new Knight(this, "w", "g1");
+		board[0][6] = "wN";
+		Knight bN = new Knight(this, "b", "b8");
+		board[7][1] = "bN";
+		Knight bN2 = new Knight(this, "b", "g8");
+		board[7][6] = "bN";
+
+		Rook wR = new Rook(this, "w", "a1");
+		board[0][0] = "wR";
+		Rook wR2 = new Rook(this, "w", "h1");
+		board[0][7] = "wR";
+		Rook bR = new Rook(this, "b", "a8");
+		board[7][0] = "bR";
+		Rook bR2 = new Rook(this, "b", "h8");
+		board[7][7] = "bR";
+
+		Bishop wB = new Bishop(this, "w", "c1");
+		board[0][2] = "wB";
+		Bishop wB2 = new Bishop(this, "w", "f1");
+		board[0][5] = "wB";
+		Bishop bB = new Bishop(this, "b", "c8");
+		board[7][2] = "bB";
+		Bishop bB2 = new Bishop(this, "b", "f8");
+		board[7][5] = "bB";
+
+		Queen wQ = new Queen(this, "w", "d1");
+		board[0][3] = "wQ";
+		Queen bQ = new Queen(this, "b", "d8");
+		board[7][3] = "bQ";
+
+		King wK = new King(this, "w", "e1");
+		board[0][4] = "wK";
+		King bK = new King(this, "b", "e8");
+		board[7][4] = "bK";
+
+		//A collection of all white pieces on the board.
+		WhiteP.add(wN);
+		WhiteP.add(wN2);
+		WhiteP.add(wB);
+		WhiteP.add(wB2);
+		WhiteP.add(wR);
+		WhiteP.add(wR2);
+		WhiteP.add(wK);
+		WhiteP.add(wQ);
+
+		//A collection of all black pieces on the board.
+		BlackP.add(bN);
+		BlackP.add(bN2);
+		BlackP.add(bB);
+		BlackP.add(bB2);
+		BlackP.add(bR);
+		BlackP.add(bR2);
+		BlackP.add(bQ);
+		BlackP.add(bK);
+
+		//TODO Why is there a second collection of pieces?
+		for (Piece p : WhiteP) {
+			wp.add(p);
+		}
+		for (Piece p : BlackP) {
+			bp.add(p);
+		}
+	}
+
+	/**
+	 * @param r
+	 *            Row on the board.
+	 * @param c
+	 *            Column on the board.
+	 * @return True, if the String occupying the square has either 'b' or 'w'.
+	 */
+	public boolean isPiece(int r, int c) {
+		//Check that the string has either 'b' or 'w' in the piece name.
+		if (board[r][c].contains("b") || board[r][c].contains("w")) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * @param r
+	 *            Row on the board.
+	 * @param c
+	 *            Column on the board.
+	 * @return The name of the piece at (r, c).
+	 */
+	public String getPiece(int r, int c) {
+		return board[r][c];
+	}
+
+	/**
+	 * Sums up all the moves of the white pieces. The total number of moves a
+	 * single piece has made is recorded in the piece.
+	 * 
+	 * @return The total number of moves white has made.
+	 */
+	public int getTotWMoves() {
+		int totmove = 0;
+
+		for (Piece p : wp) {
+			totmove += p.getMoveCount();
+		}
+		return totmove;
+	}
+
+	/**
+	 * Sums up all the moves of the black pieces. The total number of moves a
+	 * single piece has made is recorded in the piece.
+	 * 
+	 * @return The total number of moves black has made.
+	 */
+	public int getTotBMoves() {
+		int totmove = 0;
+		for (Piece p : bp) {
+			totmove += p.getMoveCount();
+		}
+		return totmove;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 * 
+	 * Prints the board out.
+	 */
+	public String toString() {
+		String s = "";
+		int count = 8;
+		for (int r = board.length - 1; r >= 0; r--) {
+			for (int col = 0; col < board[r].length; col++) {
+				String c = board[r][col];
+				s += c + " ";
+			}
+			s += count;
+			count--;
+			s += "\n";
+
+		}
+
+		for (String x : let) {
+			s += " " + x + " ";
+		}
+		return s;
+	}
+
+	/**
+	 * 
+	 * @param p
+	 *            The king piece.
+	 * @return True, castling was possible and happened. False, otherwise.
+	 */
+	public boolean KingSideCastle(String p) {
+		if (p.substring(0, 1).equalsIgnoreCase("w")) {
+			board[0][5] = "wR";
+			board[0][6] = "wK";
+			board[0][4] = "##";
+			board[0][7] = "  ";
+			return true;
+		} else if (p.substring(0, 1).equalsIgnoreCase("b")) {
+			board[7][5] = "bR";
+			board[7][6] = "bK";
+			board[7][4] = "  ";
+			board[7][7] = "##";
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * TODO Do we need to hand it the piece? Suggestion: We could just hand it
+	 * the color of the side we want to perform the castle for.
+	 * 
+	 * @param p
+	 *            The king piece.
+	 * @return True, castling was possible and happened. False, otherwise.
+	 */
+	public boolean QueenSideCastle(String p) {
+		if (p.substring(0, 1).equalsIgnoreCase("w")) {
+			board[0][3] = "wR";
+			board[0][2] = "wK";
+			board[0][0] = "##";
+			board[0][4] = "##";
+			return true;
+		} else if (p.substring(0, 1).equalsIgnoreCase("b")) {
+			board[7][3] = "bR";
+			board[7][2] = "bK";
+			board[7][0] = "  ";
+			board[7][4] = "  ";
+			return true;
+		}
+
+		return false;
+	}
+
+	public boolean move(Piece p, String a, String b) {
+		boolean result = false;
+		if (moveCtr % 2 == 0) {
+			result = move(p.toString(), a, b);		
+			
+		} else {
+			result = move(p.toString(), a, b);
+		}
+		
+		if(result){
+			prevMoveStart = a;
+			prevMoveEnd = b;
+		}
+		
+		return result;
+	}
+	
+	public void incrementMoveCtr() {
+		this.moveCtr++;
+	}
+
+	/**
+	 * @param p
+	 *            The piece to be moved.
+	 * @param a
+	 *            The original location of the piece, p.
+	 * @param b
+	 *            The destination location of the piece, p.
+	 * @return True, the move was possible and occured. False, otherwise.
+	 */
+	public boolean move(String p, String a, String b) {
+		//TODO Double-check increment moveCtr when the move is valid.
+		prevState = board;
+		prevPiece = p;
+		String current = a;
+		String moveTo = b;
+
+		int c1 = convert(current.substring(0, 1));
+		int r1 = Integer.parseInt(current.substring(1, 2)) - 1;
+		int c2 = convert(moveTo.substring(0, 1));
+		int r2 = Integer.parseInt(moveTo.substring(1, 2)) - 1;
+		Piece r = null;
+		String og = board[r2][c2];
+		if (isPiece(r2, c2)) {
+
+			if (p.substring(0, 1).equalsIgnoreCase("w")) {
+				int x = -1;
+				for (int i = 0; i < BlackP.size(); i++) {
+					if (BlackP.get(i).getPos().equalsIgnoreCase(b)) {
+						x = i;
+					}
+				}
+				if (x > -1) {
+					prevTakenPiece = r;
+					r = BlackP.remove(x);
+				}
+			}
+
+			if (p.substring(0, 1).equalsIgnoreCase("b")) {
+				int x = -1;
+				for (int i = 0; i < WhiteP.size(); i++) {
+					if (WhiteP.get(i).getPos().equalsIgnoreCase(b)) {
+						x = i;
+					}
+				}
+				if (x > -1) {
+					prevTakenPiece = r;
+					r = WhiteP.remove(x);
+				}
+			}
+		}
+
+		board[r2][c2] = p;
+		if ((c1 + r1) % 2 == 0) {
+			board[r1][c1] = "##";
+		} else {
+			board[r1][c1] = "  ";
+		}
+
+		/*
+		 * Perform the move, and check whether the current-side King is in
+		 * check.
+		 */
+		String color = p.substring(0, 1);
+		//undo if check
+		if (color.equalsIgnoreCase("w") && isWhiteCheck()) {
+			board[r1][c1] = p;
+			board[r2][c2] = og;
+			for (Piece q : WhiteP) {
+				if (q.getPos().equalsIgnoreCase(b)) {
+					q.setPos(a);
+					q.reduceMoveCount();
+				}
+			}
+
+			if (r != null)
+				BlackP.add(r);
+
+			return false;
+		} else if (color.equalsIgnoreCase("b") && isBlackCheck()) {
+			board[r1][c1] = p;
+			board[r2][c2] = og;
+
+			for (Piece q : BlackP) {
+				if (q.getPos().equalsIgnoreCase(b)) {
+					q.setPos(a);
+					q.reduceMoveCount();
+				}
+
+			}
+			if (r != null)
+				WhiteP.add(r);
+			return false;
+		}
+
+		return true;
+	}
+
+	public boolean isWhiteCheck() {
+		King wK = null;
+		for (Piece p : WhiteP) {
+			if (p.toString().equalsIgnoreCase("wK")) {
+				wK = (King) p;
+			}
+		}
+		for (Piece p : BlackP) {
+			if (p.isLegal(wK.getPos())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean isBlackCheck() {
+		King bK = null;
+		for (Piece p : BlackP) {
+			if (p.toString().equalsIgnoreCase("bK")) {
+				bK = (King) p;
+			}
+		}
+		for (Piece p : WhiteP) {
+			if (p.isLegal(bK.getPos())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public board boardClone() {
+		board b = new board();
+		for (int i = 0; i < board.length; i++) {
+			for (int j = 0; j < board[i].length; j++) {
+				b.board[i][j] = board[i][j];
+			}
+		}
+
+		for (Piece p : this.WhiteP) {
+			if (p instanceof Pawn)
+				b.WhiteP.add(new Pawn(b, p.getColor(), p.getPos(), p
+						.getMoveCount()));
+
+			if (p instanceof Rook) {
+				b.WhiteP.add(new Rook(b, p.getColor(), p.getPos(), p
+						.getMoveCount()));
+			}
+
+			if (p instanceof Bishop) {
+				b.WhiteP.add(new Bishop(b, p.getColor(), p.getPos(), p
+						.getMoveCount()));
+			}
+
+			if (p instanceof King) {
+				b.WhiteP.add(new King(b, p.getColor(), p.getPos(), p
+						.getMoveCount()));
+			}
+
+			if (p instanceof Knight) {
+				b.WhiteP.add(new Knight(b, p.getColor(), p.getPos(), p
+						.getMoveCount()));
+			}
+
+			if (p instanceof Queen) {
+				b.WhiteP.add(new Queen(b, p.getColor(), p.getPos(), p
+						.getMoveCount()));
+			}
+		}
+
+		for (Piece p : this.BlackP) {
+			if (p instanceof Pawn)
+				b.BlackP.add(new Pawn(b, p.getColor(), p.getPos(), p
+						.getMoveCount()));
+
+			if (p instanceof Rook) {
+				b.BlackP.add(new Rook(b, p.getColor(), p.getPos(), p
+						.getMoveCount()));
+			}
+
+			if (p instanceof Bishop) {
+				b.BlackP.add(new Bishop(b, p.getColor(), p.getPos(), p
+						.getMoveCount()));
+			}
+
+			if (p instanceof King) {
+				b.BlackP.add(new King(b, p.getColor(), p.getPos(), p
+						.getMoveCount()));
+			}
+
+			if (p instanceof Knight) {
+				b.BlackP.add(new Knight(b, p.getColor(), p.getPos(), p
+						.getMoveCount()));
+			}
+
+			if (p instanceof Queen) {
+				b.BlackP.add(new Queen(b, p.getColor(), p.getPos(), p
+						.getMoveCount()));
+			}
+		}
+		return b;
+	}
+
+	public boolean isWhiteCheckMate() {
+
+		if (!isWhiteCheck()) {
+			return false;
+		}
+
+		King wK = null;
+		for (Piece p : WhiteP) {
+			if (p instanceof King) {
+				wK = (King) p;
+				break;
+			}
+		}
+
+		ArrayList<String> wKMoves = wK.attackingPositions();
+		ArrayList<String> temp = wK.attackingPositions();
+
+		for (Piece p : BlackP) {
+			for (String pos : wKMoves) {
+				if (p.attackingPositions().contains(pos) && temp.contains(pos)) {
+					temp.remove(pos);
+				}
+			}
+		}
+		//if wkmoves.size() == 0 then king cant move anywhere. 
+		board clone = this.boardClone();
+		if (!temp.isEmpty()) {
+			King cloneKing = null;
+			for (Piece p : clone.WhiteP) {
+				if (p instanceof King) {
+					cloneKing = (King) p;
+					break;
+				}
+			}
+			for (String s : temp) {
+				if (cloneKing.move(s)) {
+					return false;
+				}
+			}
+		}
+		clone = this.boardClone();
+
+		//list of pieces attacking king. 
+		ArrayList<Piece> pieces = new ArrayList<Piece>();
+		for (Piece p : clone.BlackP) {
+			if (p.attackingPositions().contains(wK.getPos())) {
+				pieces.add(p);
+			}
+		}
+
+		//need to find which pieces can block. 
+
+		for (int g = 0; g < clone.WhiteP.size(); g++) {
+			for (Piece q : pieces) {
+				Piece p = clone.WhiteP.get(g);
+				for (String x : p.attackingPositions()) {
+					p = clone.WhiteP.get(g);
+					if (q.attackingPositions().contains(x)) {
+						p.move(x);
+						if (!clone.isWhiteCheck()) {
+							return false;
+						}
+						clone = this.boardClone();
+					}
+				}
+			}
+		}
+
+		return true;
+	}
+
+	public boolean isBlackCheckMate() {
+
+		if (!isBlackCheck()) {
+			return false;
+		}
+		King bK = null;
+		for (Piece p : BlackP) {
+			if (p instanceof King) {
+				bK = (King) p;
+				break;
+			}
+		}
+		ArrayList<String> bKMoves = bK.attackingPositions();
+		ArrayList<String> temp = bK.attackingPositions();
+
+		for (Piece p : WhiteP) {
+			for (String pos : bKMoves) {
+				if (p.attackingPositions().contains(pos) && temp.contains(pos)) {
+					temp.remove(pos);
+				}
+			}
+		}
+		//if wkmoves.size() == 0 then king cant move anywhere. 
+		board clone = this.boardClone();
+
+		if (!temp.isEmpty()) {
+			King cloneKing = null;
+			for (Piece p : clone.BlackP) {
+				if (p instanceof King) {
+					cloneKing = (King) p;
+					break;
+				}
+			}
+			for (String s : temp) {
+				if (cloneKing.move(s)) {
+					return false;
+				}
+			}
+		}
+		clone = this.boardClone();
+		//list of pieces attacking king. 
+		ArrayList<Piece> pieces = new ArrayList<Piece>();
+		for (Piece p : clone.WhiteP) {
+			if (p.attackingPositions().contains(bK.getPos())) {
+				pieces.add(p);
+			}
+		}
+
+		//need to find which pieces can block. 
+
+		for (int g = 0; g < clone.BlackP.size(); g++) {
+			for (Piece q : pieces) {
+				Piece p = clone.BlackP.get(g);
+				for (String x : p.attackingPositions()) {
+					p = clone.BlackP.get(g);
+					if (q.attackingPositions().contains(x)) {
+						p.move(x);
+						if (!clone.isBlackCheck()) {
+							return false;
+						}
+						clone = this.boardClone();
+					}
+				}
+			}
+		}
+
+		return true;
+	}
+
+	public boolean promote(Piece p) {
+		if (p == null) {
+			return false;
+		}
+		if (p.getColor().equalsIgnoreCase("w")) {
+			for (Piece pi : WhiteP) {
+				if ((pi instanceof Pawn) && pi.getPos().equals(p.getPos())) {
+					String pos = pi.getPos();
+					int c = convert(pos.substring(0, 1));
+					int r = Integer.parseInt(pos.substring(1)) - 1;
+					board[r][c] = p.toString();
+					WhiteP.set(WhiteP.indexOf(pi), p);
+					return true;
+				}
+			}
+		} else if (p.getColor().equalsIgnoreCase("b")) {
+			for (Piece pi : BlackP) {
+				if ((pi instanceof Pawn) && pi.getPos().equals(p.getPos())) {
+					String pos = pi.getPos();
+					int c = convert(pos.substring(0, 1));
+					int r = Integer.parseInt(pos.substring(1)) - 1;
+					board[r][c] = p.toString();
+					BlackP.set(BlackP.indexOf(pi), p);
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	public boolean enPassant(Pawn atk, Pawn tak, int r2, int c2) {
+		String moveTo = let[c2] + (r2 + 1);
+		move(atk.toString(), atk.getPos(), moveTo);
+
+		if (tak.getColor().equalsIgnoreCase("w")) {
+			if ((r2 + 1 + c2) % 2 == 0) {
+				board[r2 + 1][c2] = "##";
+			} else {
+				board[r2 + 1][c2] = "  ";
+			}
+			WhiteP.remove(tak);
+			return true;
+		} else if (tak.getColor().equalsIgnoreCase("b")) {
+			if ((r2 - 1 + c2) % 2 == 0) {
+				board[r2 - 1][c2] = "##";
+			} else {
+				board[r2 - 1][c2] = "  ";
+			}
+			BlackP.remove(tak);
+			return true;
+		}
+		return false;
+
+	}
+
+	public boolean isWhiteStaleMate() {
+		board clone = boardClone();
+
+		if (!isWhiteCheck()) {
+			for (Piece p : clone.WhiteP) {
+				if (p instanceof Pawn) {
+					Pawn pawn = (Pawn) p;
+					String cur = pawn.getPos();
+					int r = Integer.parseInt(cur.substring(1));
+					int c = convert(cur.substring(0, 1));
+					String m1 = let[c] + (r + 1);
+					String m2 = let[c] + (r + 2);
+					if (pawn.move(m1) || pawn.move(m2)) {
+						return false;
+					}
+				}
+				ArrayList<String> kmoves = p.attackingPositions();
+				for (String x : kmoves) {
+					if (p.move(x)) {
+						return false;
+					}
+					clone = boardClone();
+				}
+			}
+		} else {
+			return false;
+		}
+		return true;
+
+	}
+
+	public boolean isBlackStaleMate() {
+		board clone = boardClone();
+
+		if (!isBlackCheck()) {
+			for (Piece p : clone.BlackP) {
+				if (p instanceof Pawn) {
+					Pawn pawn = (Pawn) p;
+					String cur = pawn.getPos();
+					int r = Integer.parseInt(cur.substring(1));
+					int c = convert(cur.substring(0, 1));
+					String m1 = let[c] + (r - 1);
+					String m2 = let[c] + (r - 2);
+					if (pawn.move(m1) || pawn.move(m2)) {
+						return false;
+					}
+				}
+				ArrayList<String> kmoves = p.attackingPositions();
+				for (String x : kmoves) {
+					if (p.move(x)) {
+						return false;
+					}
+					clone = boardClone();
+				}
+			}
+		} else {
+			return false;
+		}
+		return true;
+
+	}
+	
+	public void undo(){
+		String current = prevMoveStart;
+		String moveTo = prevMoveEnd;
+		String p = prevPiece;
+		Piece r = prevTakenPiece;
+		
+		int c1 = convert(current.substring(0, 1));
+		int r1 = Integer.parseInt(current.substring(1, 2)) - 1;
+		int c2 = convert(moveTo.substring(0, 1));
+		int r2 = Integer.parseInt(moveTo.substring(1, 2)) - 1;
+		String og = board[r2][c2];
+
+		board[r2][c2] = p;
+
+		/*
+		 * Perform the move, and check whether the current-side King is in
+		 * check.
+		 */
+		String color = p.substring(0, 1);
+		//undo if check
+		if (color.equalsIgnoreCase("w")) {
+			board[r1][c1] = p;
+			board[r2][c2] = og;
+			for (Piece q : WhiteP) {
+				if (q.getPos().equalsIgnoreCase(moveTo)) {
+					q.setPos(current);
+					q.reduceMoveCount();
+				}
+			}
+
+			if (r != null)
+				BlackP.add(r);
+
+		} else if (color.equalsIgnoreCase("b") && isBlackCheck()) {
+			board[r1][c1] = p;
+			board[r2][c2] = og;
+
+			for (Piece q : BlackP) {
+				if (q.getPos().equalsIgnoreCase(moveTo)) {
+					q.setPos(current);
+					q.reduceMoveCount();
+				}
+
+			}
+			if (r != null)
+				WhiteP.add(r);
+		}
+		moveCtr--;
+//		board = prevState;
+		
+	}
+
+	public void reset() {
+		for (int i = 0; i < 8; i++) {
+			for (int j = 0; j < 8; j++) {
+				if ((i + j) % 2 == 0) {
+					board[i][j] = "##";
+				} else {
+					board[i][j] = "  ";
+				}
+			}
+		}
+		moveCtr = 0;
+		load();
+	}
+
+}

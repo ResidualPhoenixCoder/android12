@@ -5,18 +5,26 @@ import java.io.Serializable;
 import Pieces.Piece;
 
 public class Move implements Serializable {
-	private static final long serialVersionUID = 1L;
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3722379484737817804L;
 	private Piece startPiece;
 	private Piece endPiece;
 
-	private String startPos;
-	private String endPos;
+	private String startPos = "";
+	private String endPos = "";
+	private String resignWinner = "";
 
 	private boolean promotion;
-	private boolean drawOffered;
-	private boolean drawAccepted;
-	private boolean resign;
+	private boolean drawOffered = false;
+	private boolean drawAccepted = false;
+	private boolean resign = false;
+	private boolean check = false;
+	private boolean checkmate = false;
+	private boolean stalemate = false;
+	
 
 	public Move(String startPos, Piece startPiece, String endPos, Piece endPiece) {
 		this.startPos = startPos;
@@ -93,8 +101,9 @@ public class Move implements Serializable {
 		return resign;
 	}
 
-	public void setResign(boolean resign) {
+	public void setResign(boolean resign, String winner) {
 		this.resign = resign;
+		resignWinner = winner;
 	}
 	
 	@Override
@@ -105,8 +114,53 @@ public class Move implements Serializable {
 		} else if(this.drawAccepted) {
 			result = "draw";
 		} else if(this.resign) {
-			result = "resign";
+			result = "resign\n"+resignWinner;
+
 		}
+		
+		if(check){
+			if(checkmate){
+				result+=" Checkmate";
+				if(startPiece.getColor().equalsIgnoreCase("w")){
+					result+="\nWhite Wins";
+				}
+				else{
+					result+="\nBlack Wins";
+				}
+			}
+			else{
+				result+=" Check";
+			}
+		}
+		
+		else if(stalemate){
+			result+=" Stalemate";
+		}
+	
 		return result;	
+	}
+
+	public boolean isCheck() {
+		return check;
+	}
+
+	public void setCheck(boolean check) {
+		this.check = check;
+	}
+
+	public boolean isCheckmate() {
+		return checkmate;
+	}
+
+	public void setCheckmate(boolean checkmate) {
+		this.checkmate = checkmate;
+	}
+
+	public boolean isStalemate() {
+		return stalemate;
+	}
+
+	public void setStalemate(boolean stalemate) {
+		this.stalemate = stalemate;
 	}
 }

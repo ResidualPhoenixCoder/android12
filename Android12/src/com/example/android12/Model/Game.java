@@ -9,7 +9,10 @@ import java.util.List;
 import android.R;
 
 public class Game implements Serializable{
-	private static final long serialVersionUID = 1L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7224004656112256162L;
 	private String title;
 	private Date datePlayed;
 	private List<Move> movesList;

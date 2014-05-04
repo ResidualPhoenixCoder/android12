@@ -1,0 +1,98 @@
+package com.example.android12.Model;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+import android.content.Context;
+
+/**
+ * @author Mark Labrador Handles persistence of game data.
+ */
+public class ChessModel {
+	public static final String gamedbfilename = "game.dat";
+	private List<Game> games;
+	private DateCmp dcmp;
+	private TitleCmp tcmp;
+	private Context ctx;
+
+	public ChessModel(Context ctx) {
+		this.games = new ArrayList<Game>();
+		this.dcmp = new DateCmp();
+		this.tcmp = new TitleCmp();
+		this.ctx = ctx;
+	}
+
+	/**
+	 * Sorts the games list by date.
+	 */
+	public void sortGamesByDate() {
+		Collections.sort(games, dcmp);
+	}
+
+	/**
+	 * Sorts the games list by title.
+	 */
+	public void sortGamesByTitle() {
+		Collections.sort(games, tcmp);
+	}
+
+	/**
+	 * @return List of past games.
+	 */
+	public List<Game> getGamesList() {
+		return this.games;
+	}
+
+	/**
+	 * Loads the previous set of games, if any exists.
+	 * 
+	 * @throws Exception
+	 */
+	public void loadGames() throws Exception {
+		FileInputStream f_in = this.ctx.openFileInput(gamedbfilename);
+		ObjectInputStream obj_in = new ObjectInputStream(f_in);
+		this.games = (ArrayList<Game>) obj_in.readObject();
+		f_in.close();
+		obj_in.close();
+	}
+
+	/**
+	 * Saves the current set of games, if any exists.
+	 * 
+	 * @throws Exception
+	 */
+	public void saveGames() throws Exception {
+
+//		boolean b = this.ctx.deleteFile(gamedbfilename);
+		FileOutputStream f_out = this.ctx.openFileOutput(gamedbfilename, Context.MODE_PRIVATE);
+		ObjectOutputStream obj_out = new ObjectOutputStream(f_out);
+		obj_out.writeObject(this.games);
+		obj_out.close();
+		f_out.close();
+	}
+	
+	public void addGame(Game game) {
+		this.games.add(game);
+	}
+
+	private class DateCmp implements Comparator<Game> {
+		@Override
+		public int compare(Game lhs, Game rhs) {
+			return lhs.getDatePlayed().compareTo(rhs.getDatePlayed());
+		}
+	}
+
+	private class TitleCmp implements Comparator<Game> {
+		@Override
+		public int compare(Game lhs, Game rhs) {
+			return lhs.getTitle().compareTo(rhs.getTitle());
+		}
+	}
+}

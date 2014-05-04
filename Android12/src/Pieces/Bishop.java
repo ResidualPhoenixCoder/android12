@@ -38,7 +38,7 @@ public class Bishop implements Piece {
 			movecount++;
 			this.pos = pos;
 
-			return b.move(og, pos);
+			return b.move(this,og, pos);
 
 		}
 		return false;

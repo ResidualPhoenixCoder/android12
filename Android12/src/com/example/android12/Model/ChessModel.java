@@ -16,7 +16,7 @@ import android.content.Context;
  * @author Mark Labrador Handles persistence of game data.
  */
 public class ChessModel {
-	public static final String gamedbfilename = "games.ser";
+	public static final String gamedbfilename = "thegamelist.dat";
 	private List<Game> games;
 	private DateCmp dcmp;
 	private TitleCmp tcmp;
@@ -56,11 +56,13 @@ public class ChessModel {
 	 * @throws Exception
 	 */
 	public void loadGames() throws Exception {
-		FileInputStream f_in = this.ctx.openFileInput(gamedbfilename);
-		ObjectInputStream obj_in = new ObjectInputStream(f_in);
-		this.games = (List<Game>) obj_in.readObject();
-		f_in.close();
-		obj_in.close();
+
+			FileInputStream f_in = this.ctx.openFileInput(gamedbfilename);
+			ObjectInputStream obj_in = new ObjectInputStream(f_in);
+			this.games = (ArrayList<Game>) obj_in.readObject();
+			f_in.close();
+			obj_in.close();	
+		
 	}
 
 	/**
@@ -69,6 +71,8 @@ public class ChessModel {
 	 * @throws Exception
 	 */
 	public void saveGames() throws Exception {
+
+//		boolean b = this.ctx.deleteFile(gamedbfilename);
 		FileOutputStream f_out = this.ctx.openFileOutput(gamedbfilename, Context.MODE_PRIVATE);
 		ObjectOutputStream obj_out = new ObjectOutputStream(f_out);
 		obj_out.writeObject(this.games);

@@ -1,0 +1,166 @@
+package com.example.android12.Model;
+
+import java.io.Serializable;
+
+import Pieces.Piece;
+
+public class Move implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3722379484737817804L;
+	private Piece startPiece;
+	private Piece endPiece;
+
+	private String startPos = "";
+	private String endPos = "";
+	private String resignWinner;
+
+	private boolean promotion;
+	private boolean drawOffered = false;
+	private boolean drawAccepted = false;
+	private boolean resign = false;
+	private boolean check = false;
+	private boolean checkmate = false;
+	private boolean stalemate = false;
+	
+
+	public Move(String startPos, Piece startPiece, String endPos, Piece endPiece) {
+		this.startPos = startPos;
+		this.startPiece = startPiece;
+
+		this.endPos = endPos;
+		this.endPiece = endPiece;
+	}
+
+	public Move(String startPos, Piece startPiece, String endPos,
+			Piece endPiece, boolean promotion, boolean drawOffered) {
+		this(startPos, startPiece, endPos, endPiece);
+		this.promotion = promotion;
+		this.drawOffered = drawOffered;
+	}
+
+	public boolean isPromotion() {
+		return promotion;
+	}
+
+	public void setPromotion(boolean promotion) {
+		this.promotion = promotion;
+	}
+	
+	public boolean isDrawOffered() {
+		return drawOffered;
+	}
+
+	public void setDrawOffered(boolean drawOffered) {
+		this.drawOffered = drawOffered;
+	}
+
+	public Piece getStartPiece() {
+		return startPiece;
+	}
+
+	public void setStartPiece(Piece startPiece) {
+		this.startPiece = startPiece;
+	}
+
+	public Piece getEndPiece() {
+		return endPiece;
+	}
+
+	public void setEndPiece(Piece endPiece) {
+		this.endPiece = endPiece;
+	}
+
+	public String getStartPos() {
+		return startPos;
+	}
+
+	public void setStartPos(String startPos) {
+		this.startPos = startPos;
+	}
+
+	public String getEndPos() {
+		return endPos;
+	}
+
+	public void setEndPos(String endPos) {
+		this.endPos = endPos;
+	}
+	
+	public boolean isDrawAccepted() {
+		return drawAccepted;
+	}
+
+	public void setDrawAccepted(boolean drawAccepted) {
+		this.drawAccepted = drawAccepted;
+	}
+
+	public boolean isResign() {
+		return resign;
+	}
+
+	public void setResign(boolean resign, String winner) {
+		this.resign = resign;
+		resignWinner = winner;
+	}
+	
+	@Override
+	public String toString() {
+		String result = startPos + " " + endPos;
+		if(this.drawOffered) {
+			result += " draw?";
+		} else if(this.drawAccepted) {
+			result = "draw";
+		} else if(this.resign) {
+			result = "resign";
+
+		}
+		
+		if(check){
+			if(checkmate){
+				result+=" Checkmate";
+				if(startPiece.getColor().equalsIgnoreCase("w")){
+					result+="\nWhite Wins";
+				}
+				else{
+					result+="\nBlack Wins";
+				}
+			}
+			else{
+				result+=" Check";
+			}
+		}
+		
+		else if(stalemate){
+			result+=" Stalemate";
+		}
+	
+		return result;	
+	}
+
+	public boolean isCheck() {
+		return check;
+	}
+
+	public void setCheck(boolean check) {
+		this.check = check;
+	}
+
+	public boolean isCheckmate() {
+		return checkmate;
+	}
+
+	public void setCheckmate(boolean checkmate) {
+		this.checkmate = checkmate;
+	}
+
+	public boolean isStalemate() {
+		return stalemate;
+	}
+
+	public void setStalemate(boolean stalemate) {
+		this.stalemate = stalemate;
+	}
+}

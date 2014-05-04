@@ -40,9 +40,9 @@ public class King implements Piece {
 			this.pos = pos;
 
 			//				return b.move(toString(),og, pos);
-			return b.move(og, pos);
+			return b.move(this,og, pos);
 
-		} else if (isKingSideCastle()) {
+		} if (isKingSideCastle()) {
 			Rook r = getKingSideCastleRook();
 			if (r != null) {
 				if (color.equals("w") && pos.equalsIgnoreCase("g1")) {
@@ -59,7 +59,7 @@ public class King implements Piece {
 
 			}
 
-		} else if (isQueenSideCastle()) {
+		} if (isQueenSideCastle()) {
 			Rook r = getQueenSideCastleRook();
 			if (r != null) {
 				if (color.equals("w") && pos.equalsIgnoreCase("c1")) {

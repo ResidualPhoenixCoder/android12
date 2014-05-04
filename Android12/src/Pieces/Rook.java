@@ -41,7 +41,7 @@ public class Rook implements Piece {
 			this.pos = pos;
 
 			//				return b.move(toString(),og, pos);
-			return b.move(og, pos);
+			return b.move(this,og, pos);
 
 		}
 		return false;
