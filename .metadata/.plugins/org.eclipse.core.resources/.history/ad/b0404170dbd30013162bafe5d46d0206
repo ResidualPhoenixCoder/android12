@@ -62,8 +62,8 @@ public class GUIChessBoard extends View implements IChessBoard {
 	
 	
 	private DialogInterface.OnClickListener gameselect;
-	private OnClickListener sortdate;
-	private OnClickListener sorttitle;
+	private DialogInterface.OnClickListener sortdate;
+	private DialogInterface.OnClickListener sorttitle;
 	private DialogInterface.OnClickListener promote;
 	private DialogInterface.OnClickListener onSave;
 
@@ -210,7 +210,7 @@ public class GUIChessBoard extends View implements IChessBoard {
 		});
 	}
 	
-	public void setUpGameListPopUp(DialogInterface.OnClickListener gameSelect, OnClickListener sortdate, OnClickListener sorttitle ){
+	public void setUpGameListPopUp(DialogInterface.OnClickListener gameSelect, DialogInterface.OnClickListener sortdate, DialogInterface.OnClickListener sorttitle ){
 		gamelistPopUp = new AlertDialog.Builder(parent);
 		this.gameselect = gameSelect;
 		this.sortdate = sortdate;
@@ -230,13 +230,11 @@ public class GUIChessBoard extends View implements IChessBoard {
 
 		
 		Button sd = new Button(parent);
-		sd.setOnClickListener(sortdate);
 		sd.setText("Sort List By Date");
 		sd.setTextSize(12);;
 //		sd.setLayoutParams(one);
 		
 		Button st = new Button(parent);
-		st.setOnClickListener(sorttitle);
 		st.setText("Sort List By Title");
 		st.setTextSize(12);;
 //		st.setLayoutParams(two);
@@ -371,21 +369,13 @@ public class GUIChessBoard extends View implements IChessBoard {
 	}
 	
 	public void showGameList(){
-		setUpGameListPopUp(gameselect,sortdate,sorttitle);
+		setUpGameListPopUp(gameselect);
 		CharSequence[] gameTitles = new String[gamesList.size()];
 		int c = 0;
 		for(Game g : gamesList){
 			gameTitles[c] = g.getTitle();
 			c++;
 		}
-		gamelistPopUp.setAdapter(gamelistadapter, new DialogInterface.OnClickListener() {
-			
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				// TODO Auto-generated method stub
-				
-			}
-		});
 		gamelistPopUp.setItems(gameTitles, gameselect);
 		
 		gamelistPopUp.show();

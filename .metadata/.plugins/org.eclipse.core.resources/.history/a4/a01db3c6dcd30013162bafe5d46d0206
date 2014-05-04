@@ -378,14 +378,6 @@ public class GUIChessBoard extends View implements IChessBoard {
 			gameTitles[c] = g.getTitle();
 			c++;
 		}
-		gamelistPopUp.setAdapter(gamelistadapter, new DialogInterface.OnClickListener() {
-			
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				// TODO Auto-generated method stub
-				
-			}
-		});
 		gamelistPopUp.setItems(gameTitles, gameselect);
 		
 		gamelistPopUp.show();

@@ -59,6 +59,21 @@ public class ChessControl {
 		view_board.setUpMoveList(); //THIS MUST BE CALLED AFTER A REFERENCE IS HANDED TO THE GUI.
 		view_board.loadGamesList(this.model.getGamesList());
 
+		view_board.registerMajorBoardActionsAL("Date Sort",
+				new OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						model.sortGamesByDate();
+					}
+				});
+
+		view_board.registerMajorBoardActionsAL("Title Sort",
+				new OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						model.sortGamesByTitle();
+					}
+				});
 		
 		view_board.setUpSavePopUp(new DialogInterface.OnClickListener() {
 			
@@ -127,24 +142,7 @@ public class ChessControl {
 				b.show();
 			
 			}
-		}, new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				model.sortGamesByTitle();
-				view_board.refreshGameListData();
-
-			}
-		}, new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				model.sortGamesByTitle();
-				view_board.refreshGameListData();
-
-			}
 		});
-		
-		
-
 
 		view_board.registerPositionAL(new OnClickListener() {
 			/* GENERAL MOVE */
@@ -571,7 +569,6 @@ public class ChessControl {
 	private boolean isWhiteMove() {
 		return backend_board.getMoveCtr() % 2 == 0;
 	}
-
 
 	/*
 	 * Performs a valid move at random.

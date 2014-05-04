@@ -177,7 +177,7 @@ public interface IChessBoard {
 	
 	public void showGameList();
 		
-	public void setUpGameListPopUp(DialogInterface.OnClickListener gameSelect, OnClickListener sortdate, OnClickListener sorttitle );
+	public void setUpGameListPopUp(DialogInterface.OnClickListener gameSelect, DialogInterface.OnClickListener sortdate, DialogInterface.OnClickListener sorttitle );
 	
 	public void refreshGameListData();
 		

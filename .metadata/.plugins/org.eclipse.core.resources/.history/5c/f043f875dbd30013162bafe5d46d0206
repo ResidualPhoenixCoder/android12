@@ -236,7 +236,7 @@ public class GUIChessBoard extends View implements IChessBoard {
 //		sd.setLayoutParams(one);
 		
 		Button st = new Button(parent);
-		st.setOnClickListener(sorttitle);
+		st.setOnClickListener(st);
 		st.setText("Sort List By Title");
 		st.setTextSize(12);;
 //		st.setLayoutParams(two);
@@ -378,14 +378,6 @@ public class GUIChessBoard extends View implements IChessBoard {
 			gameTitles[c] = g.getTitle();
 			c++;
 		}
-		gamelistPopUp.setAdapter(gamelistadapter, new DialogInterface.OnClickListener() {
-			
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				// TODO Auto-generated method stub
-				
-			}
-		});
 		gamelistPopUp.setItems(gameTitles, gameselect);
 		
 		gamelistPopUp.show();

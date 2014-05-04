@@ -127,24 +127,28 @@ public class ChessControl {
 				b.show();
 			
 			}
-		}, new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				model.sortGamesByTitle();
-				view_board.refreshGameListData();
-
-			}
-		}, new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				model.sortGamesByTitle();
-				view_board.refreshGameListData();
-
-			}
 		});
 		
 		
 
+		view_board.registerMajorBoardActionsAL("Date Sort",
+				new OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						model.sortGamesByDate();
+						view_board.refreshGameListData();
+					}
+				});
+
+		view_board.registerMajorBoardActionsAL("Title Sort",
+				new OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						model.sortGamesByTitle();
+						view_board.refreshGameListData();
+
+					}
+				});
 
 		view_board.registerPositionAL(new OnClickListener() {
 			/* GENERAL MOVE */

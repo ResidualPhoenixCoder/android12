@@ -1020,5 +1020,45 @@ public class board {
 		moveCtr = 0;
 		load();
 	}
+	
+	public ArrayList<String> allLegalWhiteMoves(){
+		ArrayList<String> moves = new ArrayList<String>();
+		board clone = boardClone();
+		for(Piece p:clone.WhiteP){
+			for(int i = 0;i<8;i++){
+				for(int j  = 0; j<8;j++){
+					String pos = let[j]+(i+1);
+					if(p.move(pos)){
+						moves.add(pos);
+					}
+					clone = boardClone();
+					
+				}
+			}
+		}
+		
+		return moves;
+		
+	}
+	
+	public ArrayList<String> allLegalBlackMoves(){
+		ArrayList<String> moves = new ArrayList<String>();
+		board clone = boardClone();
+		for(Piece p:clone.BlackP){
+			for(int i = 0;i<8;i++){
+				for(int j  = 0; j<8;j++){
+					String pos = let[j]+(i+1);
+					if(p.move(pos)){
+						moves.add(pos);
+					}
+					clone = boardClone();
+					
+				}
+			}
+		}
+		
+		return moves;
+		
+	}
 
 }
