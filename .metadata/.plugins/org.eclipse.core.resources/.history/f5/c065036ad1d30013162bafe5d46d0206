@@ -395,7 +395,7 @@ public class ChessControl {
 							.equalsIgnoreCase("Offer Draw")) {
 						draw = true;
 						view_board.disableDraw();
-//						view_board.totalAI();
+						view_board.totalAI();
 					} else if (drawBtn.getText().toString()
 							.equalsIgnoreCase("Accept Draw")) {
 						currMove = new Move("", null, "", null);

@@ -190,6 +190,6 @@ public interface IChessBoard {
 	
 	public void declineDraw();
 	
-//	public void totalAI();
+	public void totalAI();
 	
 }
