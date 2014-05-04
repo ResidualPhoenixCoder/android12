@@ -130,7 +130,7 @@ public class ChessControl {
 		}, new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				model.sortGamesByDate();
+				model.sortGamesByTitle();
 				view_board.refreshGameListData();
 
 			}

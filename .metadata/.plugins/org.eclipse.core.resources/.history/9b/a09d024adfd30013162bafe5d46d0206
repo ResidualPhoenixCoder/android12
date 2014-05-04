@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import android.R;
@@ -15,7 +14,7 @@ public class Game implements Serializable{
 	 */
 	private static final long serialVersionUID = -7224004656112256162L;
 	private String title;
-	private Calendar datePlayed;
+	private Date datePlayed;
 	private List<Move> movesList;
 	private CharSequence gameStringList;
 	
@@ -25,7 +24,7 @@ public class Game implements Serializable{
 	
 	public Game(String title) {
 		this.title = title;
-		this.datePlayed = Calendar.getInstance();
+		this.datePlayed = Calendar.getInstance().getTime();
 		this.movesList = new ArrayList<Move>();
 	}
 	
@@ -37,7 +36,7 @@ public class Game implements Serializable{
 		return this.title;
 	}
 	
-	public Calendar getDatePlayed() {
+	public Date getDatePlayed() {
 		return this.datePlayed;
 	}
 	
