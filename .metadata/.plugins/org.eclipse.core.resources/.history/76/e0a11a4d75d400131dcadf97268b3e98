@@ -462,7 +462,7 @@ public class ChessControl {
 	private boolean move() {
 		boolean result = false;
 		view_board.declineDraw();
-		if (startP != null && endP != null&&startP.getPiece()!=null) {
+		if (startP != null && endP != null) {
 			Piece ogStartP = startP.getPiece();
 			Piece ogEndP = endP.getPiece();
 			/*
