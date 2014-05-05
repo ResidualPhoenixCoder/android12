@@ -4,6 +4,7 @@ import java.nio.channels.AlreadyConnectedException;
 import java.util.ArrayList;
 import java.util.List;
 
+import Board.MoveContainer;
 import Board.board;
 import Pieces.King;
 import Pieces.Pawn;
@@ -14,6 +15,7 @@ import android.content.DialogInterface;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.example.android12.GUIBoard.ASquare;
 import com.example.android12.GUIBoard.GUIChessBoard;
@@ -373,12 +375,21 @@ public class ChessControl {
 			public void onClick(View v) {
 				if (isWhiteMove()) {
 					view_board.disableAI();
-					autoMove(backend_board.WhiteP);
+//					autoMove(backend_board.WhiteP);
+					try{
+						autoMove2(backend_board.WhiteP);
+					}catch(Exception e){
+						e.printStackTrace();
+					}
 					view_board.enableAI();
 				} else {
 					view_board.disableAI();
-					autoMove(backend_board.BlackP);
-					view_board.enableAI();
+//					autoMove(backend_board.BlackP);
+					try{
+						autoMove2(backend_board.BlackP);
+					}catch(Exception e){
+						e.printStackTrace();
+					}					view_board.enableAI();
 				}
 			}
 		});
@@ -572,7 +583,85 @@ public class ChessControl {
 		return backend_board.getMoveCtr() % 2 == 0;
 	}
 
+	
+	private void autoMove2(ArrayList<Piece> pieces){
+		ASquare start = null;
+		ASquare end = null;
+		if(pieces.size()>0){
+			ArrayList<MoveContainer> moves = new ArrayList<MoveContainer>();
+			if(pieces.get(0).getColor().equalsIgnoreCase("w")){
+				moves = backend_board.allLegalWhiteMoves();
+			}
+			else{
+				moves = backend_board.allLegalBlackMoves();
+				
+			}
+				int rand1 = 0;
+	
+					rand1 = (int)(Math.random()*(moves.size()-1));
+			
+					int rand2 = (int)(Math.random()*(moves.get(rand1).getMoves().size()-1));
+					String moveTo = moves.get(rand1).getMoves().get(rand2);
+					
+					for(ASquare[] ar : view_board.getSquares()){
+						for(ASquare s : ar){
+							if(s.getPosition().equalsIgnoreCase(moves.get(rand1).getPiece().getPos())){
+								start = s;
+							}
+							if(s.getPosition().equalsIgnoreCase(moveTo)){
+								end = s;
+							}
+						}
 
+					}
+					start.performClick();
+//					backend_board.reCalibrate();
+//					view_board.reDraw(backend_board.board);
+//					startP = start;
+					end.performClick();
+					
+					
+					
+//					startP.resetBackgroundColor();
+//					endP.resetBackgroundColor();
+//					startP = null;
+//					endP = null;
+
+//					if(move()){
+//						String pos = endP.getPosition().substring(1);
+//						if (endP.getPiece() instanceof Pawn
+//								&& (pos.equals("8") || pos.equals("1"))) {
+//							Pawn currPawn = (Pawn) endP.getPiece();
+//							if (isWhiteMove()
+//									&& pos.equals("8")
+//									&& currPawn.getColor()
+//											.equalsIgnoreCase("w")) {
+//								promoSquare = endP;
+//								view_board.showPromotionType();
+//								//END-POINT
+//							} else if (!isWhiteMove()
+//									&& pos.equals("1")
+//									&& currPawn.getColor()
+//											.equalsIgnoreCase("b")) {
+//								promoSquare = endP;
+//								view_board.showPromotionType();
+//								//END-POINT
+//							}
+//
+//					}
+//
+//						moveNumber++;
+//						backend_board.incrementMoveCtr();
+//						view_board.reDraw(backend_board.board);
+//						startP = null;
+//						endP = null;
+//						Toast.makeText(view_board.getParentContext(), "d", Toast.LENGTH_SHORT).show();
+//				}
+				
+			
+		}
+	}
+	
 	/*
 	 * Performs a valid move at random.
 	 */

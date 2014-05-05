@@ -107,6 +107,7 @@ public class GUIChessBoard extends View implements IChessBoard {
 	public void registerPromotionAction(DialogInterface.OnClickListener promote) {
 		this.promote = promote;
 		this.promPieces.setItems(values, promote);
+		this.promPieces.setCancelable(false);
 	}
 
 	private void createControlButtons() {
@@ -526,19 +527,19 @@ public class GUIChessBoard extends View implements IChessBoard {
 
 	}
 	
-//	public void totalAI(){
-//		int c = 0;
-//		while(!b.isWhiteCheckMate()||b.isBlackCheckMate()){
-//			try{
-//				controls.get("AI").performClick();
-//			}
-//			catch(Exception e){
-//				Toast.makeText(parent, "lol", Toast.LENGTH_LONG).show();
-//			}
-//			if(c == 10){
-//				break;
-//			}
-//			c++;
-//		}
-//	}
+	public void totalAI(){
+		int c = 0;
+		while(!b.isWhiteCheckMate()||b.isBlackCheckMate()){
+			try{
+				controls.get("AI").performClick();
+			}
+			catch(Exception e){
+				Toast.makeText(parent, "lol", Toast.LENGTH_LONG).show();
+			}
+			if(c == 10){
+				break;
+			}
+			c++;
+		}
+	}
 }

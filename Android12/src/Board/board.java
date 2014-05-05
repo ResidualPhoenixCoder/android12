@@ -2,6 +2,8 @@ package Board;
 
 import java.util.ArrayList;
 
+import com.example.android12.Model.Move;
+
 import Pieces.Bishop;
 import Pieces.King;
 import Pieces.Knight;
@@ -1021,18 +1023,50 @@ public class board {
 		load();
 	}
 	
-	public ArrayList<String> allLegalWhiteMoves(){
-		ArrayList<String> moves = new ArrayList<String>();
+	public ArrayList<MoveContainer> allLegalWhiteMoves(){
+		ArrayList<MoveContainer> moves = new ArrayList<MoveContainer>();
 		board clone = boardClone();
-		for(Piece p:clone.WhiteP){
+		int size = clone.WhiteP.size();
+		for(int k = 0;k<size;k++){
+			Piece p = clone.WhiteP.get(k);
+			MoveContainer mc = new MoveContainer(WhiteP.get(k));
 			for(int i = 0;i<8;i++){
 				for(int j  = 0; j<8;j++){
 					String pos = let[j]+(i+1);
 					if(p.move(pos)){
-						moves.add(pos);
+						mc.getMoves().add(pos);
+					}
+					clone = this.boardClone();
+					p = clone.WhiteP.get(k);
+					
+				}
+			}
+			if(mc.getMoves().size()>0){
+				moves.add(mc);
+			}
+			
+		}
+		
+		return moves;
+		
+	}
+	
+	public ArrayList<MoveContainer> allLegalBlackMoves(){
+		ArrayList<MoveContainer> moves = new ArrayList<MoveContainer>();
+		board clone = boardClone();
+		int size = clone.BlackP.size();
+		for(int k = 0;k<size;k++){
+			Piece p = clone.BlackP.get(k);
+			MoveContainer mc = new MoveContainer(BlackP.get(k));
+			moves.add(mc);
+			for(int i = 0;i<8;i++){
+				for(int j  = 0; j<8;j++){
+					String pos = let[j]+(i+1);
+					if(p.move(pos)){
+						mc.getMoves().add(pos);
 					}
 					clone = boardClone();
-					
+					p = clone.BlackP.get(k);
 				}
 			}
 		}
@@ -1041,24 +1075,54 @@ public class board {
 		
 	}
 	
-	public ArrayList<String> allLegalBlackMoves(){
-		ArrayList<String> moves = new ArrayList<String>();
-		board clone = boardClone();
-		for(Piece p:clone.BlackP){
-			for(int i = 0;i<8;i++){
-				for(int j  = 0; j<8;j++){
-					String pos = let[j]+(i+1);
-					if(p.move(pos)){
-						moves.add(pos);
-					}
-					clone = boardClone();
-					
+	public void reCalibrate(){
+		String[][] nb = new String[8][8];
+		
+		for (int i = 0; i < 8; i++) {
+			for (int j = 0; j < 8; j++) {
+				if ((i + j) % 2 == 0) {
+					nb[i][j] = "##";
+				} else {
+					nb[i][j] = "  ";
 				}
 			}
 		}
 		
-		return moves;
+		for(Piece p : WhiteP){
+			String pos = p.getPos();
+			int c1 = convert(pos.substring(0, 1));
+			int r1 = Integer.parseInt(pos.substring(1, 2)) - 1;
+			nb[r1][c1] = p.toString();
+			
+		}
 		
+		for(Piece p : BlackP){
+			String pos = p.getPos();
+			int c1 = convert(pos.substring(0, 1));
+			int r1 = Integer.parseInt(pos.substring(1, 2)) - 1;
+			nb[r1][c1] = p.toString();
+			
+		}
+		board = nb;
+	}
+	
+	public boolean equals(Object o){
+		if(!(o instanceof board)){
+			return false;
+		}
+		
+		board b = (board) o;
+		
+		for(int i = 0;i<8;i++){
+			for(int j = 0;j<8;j++){
+				if(!board[i][j].equals(o)){
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 
+
 }
+
