@@ -83,8 +83,8 @@ public class ChessControl {
 						model.saveGames();
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
-						view_board.displayErrorMsg("Error while saving game");
-						view_board.hideErrorMsg();
+//						view_board.displayErrorMsg("Error while saving game");
+//						view_board.hideErrorMsg();
 					}
 					dialog.dismiss();
 				}
@@ -119,8 +119,8 @@ public class ChessControl {
 							model.saveGames();
 						} catch (Exception e) {
 							// TODO Auto-generated catch block
-							view_board.displayErrorMsg("Error while deleting game");
-							view_board.hideErrorMsg();
+//							view_board.displayErrorMsg("Error while deleting game");
+//							view_board.hideErrorMsg();
 						}
 						dialog.dismiss();
 					}
@@ -182,6 +182,7 @@ public class ChessControl {
 				 * counter.
 				 */
 				if (v instanceof ASquare) {
+					view_board.reDraw(backend_board.board);
 					ASquare currSquare = (ASquare) v;
 
 					if (startP == null) { //INITIAL SELECTION
@@ -389,7 +390,8 @@ public class ChessControl {
 						autoMove2(backend_board.BlackP);
 					}catch(Exception e){
 						e.printStackTrace();
-					}					view_board.enableAI();
+					}					
+					view_board.enableAI();
 				}
 			}
 		});
@@ -587,6 +589,7 @@ public class ChessControl {
 	private void autoMove2(ArrayList<Piece> pieces){
 		ASquare start = null;
 		ASquare end = null;
+
 		if(pieces.size()>0){
 			ArrayList<MoveContainer> moves = new ArrayList<MoveContainer>();
 			if(pieces.get(0).getColor().equalsIgnoreCase("w")){
@@ -597,11 +600,14 @@ public class ChessControl {
 				
 			}
 				int rand1 = 0;
-	
-					rand1 = (int)(Math.random()*(moves.size()-1));
-			
-					int rand2 = (int)(Math.random()*(moves.get(rand1).getMoves().size()-1));
-					String moveTo = moves.get(rand1).getMoves().get(rand2);
+				int rand2 = 0;
+				String moveTo = "";
+		
+				rand1 = (int)(Math.random()*(moves.size()-1));
+				
+				 rand2 = (int)(Math.random()*(moves.get(rand1).getMoves().size()-1));
+				 moveTo = moves.get(rand1).getMoves().get(rand2);	
+
 					
 					for(ASquare[] ar : view_board.getSquares()){
 						for(ASquare s : ar){
@@ -614,12 +620,18 @@ public class ChessControl {
 						}
 
 					}
-					start.performClick();
+
+						start.performClick();
+						end.performClick();
+					
 //					backend_board.reCalibrate();
 //					view_board.reDraw(backend_board.board);
 //					startP = start;
-					end.performClick();
-					
+//					Toast.makeText(view_board.getParentContext(), moveNumber+" "+backend_board.getMoveCtr(), Toast.LENGTH_SHORT).show();
+
+					if(backend_board.equals(view_board)){
+						Toast.makeText(view_board.getParentContext(), "Not equal", Toast.LENGTH_LONG).show();
+					}
 					
 					
 //					startP.resetBackgroundColor();

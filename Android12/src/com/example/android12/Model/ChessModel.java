@@ -16,7 +16,7 @@ import android.content.Context;
  * @author Mark Labrador Handles persistence of game data.
  */
 public class ChessModel {
-	public static final String gamedbfilename = "Listofgames.dat";
+	public static final String gamedbfilename = "Alist.dat";
 	private List<Game> games;
 	private DateCmp dcmp;
 	private TitleCmp tcmp;

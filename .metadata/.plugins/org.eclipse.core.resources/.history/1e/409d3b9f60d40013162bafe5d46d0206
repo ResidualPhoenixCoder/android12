@@ -1,0 +1,848 @@
+package com.example.android12.Control;
+
+import java.nio.channels.AlreadyConnectedException;
+import java.util.ArrayList;
+import java.util.List;
+
+import Board.MoveContainer;
+import Board.board;
+import Pieces.King;
+import Pieces.Pawn;
+import Pieces.Piece;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.Toast;
+
+import com.example.android12.GUIBoard.ASquare;
+import com.example.android12.GUIBoard.GUIChessBoard;
+import com.example.android12.GUIBoard.IChessBoard;
+import com.example.android12.Model.ChessModel;
+import com.example.android12.Model.Game;
+import com.example.android12.Model.Move;
+
+public class ChessControl {
+	private board backend_board;
+	private IChessBoard view_board;
+	private ChessModel model;
+
+	private ASquare startP;
+	private ASquare endP;
+	private ASquare promoSquare;
+
+	private int startOgColor;
+	private int endOgColor;
+	private int moveNumber;
+
+	private boolean draw;
+	private boolean resign;
+	private boolean oldGame = false;
+
+	private Game currGame;
+	private Move currMove;
+
+	public ChessControl(board backend_board, IChessBoard view_board,
+			ChessModel model) {
+		this.backend_board = backend_board;
+		this.view_board = view_board;
+		this.model = model;
+		this.currGame = new Game();
+		setup();
+	}
+
+	private void setup() {
+		/*
+		 * List of Actions +Forward +Backward +AI +Draw +Resign +Promotion
+		 */
+		view_board.loadMovesList(this.currGame.getMovesList());
+		view_board.setUpMoveList(); //THIS MUST BE CALLED AFTER A REFERENCE IS HANDED TO THE GUI.
+		view_board.loadGamesList(this.model.getGamesList());
+
+		
+		view_board.setUpSavePopUp(new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// TODO Auto-generated method stub
+				String gametitle = view_board.getGameSaveTitle();
+				boolean b = true;
+				for(Game g : model.getGamesList()){
+					if(g.getTitle().equalsIgnoreCase(gametitle)){
+						view_board.displayErrorMsg("Game not saved. Game with that title already exists.");
+						view_board.hideErrorMsg();
+						b = false;
+					}
+				}
+				if(b){
+					currGame.setTitle(gametitle);
+					model.addGame(currGame);	
+					try {
+						model.saveGames();
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						view_board.displayErrorMsg("Error while saving game");
+						view_board.hideErrorMsg();
+					}
+					dialog.dismiss();
+				}
+			}
+		});
+		
+		view_board.setUpGameListPopUp(new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, final int which) {
+				// TODO Auto-generated method stub
+				AlertDialog.Builder b = new AlertDialog.Builder(view_board.getParentContext());
+				b.setTitle("What would you like to do with the game: "+model.getGamesList().get(which).getTitle()+"?");
+				b.setPositiveButton("Load Game", new DialogInterface.OnClickListener() {
+					
+					@Override
+					public void onClick(DialogInterface dialog, int i) {
+						// TODO Auto-generated method stub
+						currGame = model.getGamesList().get(which);
+						prepareLoadGame();
+						dialog.dismiss();
+					}
+				});
+				
+				b.setNegativeButton("Delete Game", new DialogInterface.OnClickListener() {
+					
+					@Override
+					public void onClick(DialogInterface dialog, int i) {
+						// TODO Auto-generated method stub
+						model.getGamesList().remove(which);
+						try {
+							model.saveGames();
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							view_board.displayErrorMsg("Error while deleting game");
+							view_board.hideErrorMsg();
+						}
+						dialog.dismiss();
+					}
+				});
+				
+				b.show();
+			
+			}
+		}, new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				model.sortGamesByDate();
+				view_board.refreshGameListData();
+
+			}
+		}, new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				model.sortGamesByTitle();
+				view_board.refreshGameListData();
+
+			}
+		});
+		
+		
+
+
+		view_board.registerPositionAL(new OnClickListener() {
+			/* GENERAL MOVE */
+			@Override
+			public void onClick(View v) {
+				/*
+				 * v.getId() this is your position. Parse position.
+				 * 
+				 * DECIDE WHETHER TO HIGHLIGHT Check whether the current is
+				 * occupied. + If it is, check whether the piece is the same
+				 * color as whoever's turn. ++Then you highlight the square.
+				 * Otherwise, break.
+				 * 
+				 * 
+				 * if startPos is empty and the clicked on view contains a
+				 * piece, load this into the startPos. else if startPos is the
+				 * same as the square selected again, unselect the current
+				 * square and break. Otherwise, fill the end.
+				 * 
+				 * if both startPos and endPos are filled, then perform the
+				 * move. if move returns false, then don't redraw and keep
+				 * startPos highlighted. if move returns true, then redraw and
+				 * clear all highlights.
+				 * 
+				 * Basically, call move.
+				 */
+				
+				//TODO Check for checkmates and stalemates on each move.
+				//TODO Double-check selection logic.
+				
+				/*
+				 * Side that is moving is determined by the backend board's move
+				 * counter.
+				 */
+				if (v instanceof ASquare) {
+					view_board.reDraw(backend_board.board);
+					ASquare currSquare = (ASquare) v;
+
+					if (startP == null) { //INITIAL SELECTION
+						Piece currPiece = currSquare.getPiece();
+						if (currPiece != null ) {
+							boolean localResult = isWhiteMove() ? currPiece.getColor().equalsIgnoreCase("w") : currPiece.getColor().equalsIgnoreCase("b");
+							if(localResult) {
+								startP = currSquare;
+								startOgColor = startP.getBackgroundColor();
+								startP.setBackgroundColor(ASquare.selectedSquareColor);
+							}
+						}
+					} else if (startP.getPosition().equals(
+							currSquare.getPosition())) { //DE-SELECTION
+						startP.setBackgroundColor(startOgColor);
+						startP = null;
+					} 
+					else if(currSquare.getPiece()!=null &&startP.getPiece().getColor().equalsIgnoreCase(
+							currSquare.getPiece().getColor())){
+						startP.setBackgroundColor(startOgColor);
+						startP = currSquare;
+						startOgColor = startP.getBackgroundColor();
+						startP.setBackgroundColor(ASquare.selectedSquareColor);
+					}
+					else if (endP == null) { //END SELECTION
+						Piece currPiece = startP.getPiece();
+						if (currPiece != null) {
+							String tmpPos = currSquare.getPosition();
+							boolean legal = currPiece.isLegal(currSquare
+									.getPosition());
+							if (currPiece instanceof Pawn) { //PAWN ENPASSANT CHECK
+								if (((Pawn) currPiece).isEnPassant(tmpPos)
+										|| legal) {
+									endP = currSquare;
+									endOgColor = endP.getBackgroundColor();
+									endP.setBackgroundColor(ASquare.selectedSquareColor);
+								}
+							} else if (currPiece instanceof King) { //KING CASTLING CHECK
+								King tmpK = (King) currPiece;
+								if (tmpK.isCastle(tmpPos) || legal) {
+									endP = currSquare;
+									endOgColor = endP.getBackgroundColor();
+									endP.setBackgroundColor(ASquare.selectedSquareColor);
+								}
+							} else if (legal) { //GENERAL PIECE CHECK
+								endP = currSquare;
+								endOgColor = endP.getBackgroundColor();
+								endP.setBackgroundColor(ASquare.selectedSquareColor);
+							}
+						}
+					}
+
+					/*
+					 * Start processing the move, if startP and endP are
+					 * non-empty. The invariant here is that they are only
+					 * non-empty, if they are valid locations after each move.
+					 */
+					if (startP != null && endP != null) {
+						if (move()) {
+							view_board.reDraw(backend_board.board);
+
+							/*
+							 * Check whether this is a valid promotion type.
+							 */
+							String pos = endP.getPosition().substring(1);
+							if (endP.getPiece() instanceof Pawn
+									&& (pos.equals("8") || pos.equals("1"))) {
+								Pawn currPawn = (Pawn) endP.getPiece();
+								if (isWhiteMove()
+										&& pos.equals("8")
+										&& currPawn.getColor()
+												.equalsIgnoreCase("w")) {
+									promoSquare = endP;
+									view_board.showPromotionType();
+									//END-POINT
+								} else if (!isWhiteMove()
+										&& pos.equals("1")
+										&& currPawn.getColor()
+												.equalsIgnoreCase("b")) {
+									promoSquare = endP;
+									view_board.showPromotionType();
+									//END-POINT
+								}
+							} else {
+								backend_board.incrementMoveCtr();
+								view_board.reDraw(backend_board.board);
+
+								startP.setBackgroundColor(startOgColor);
+								startP = null;
+
+								endP.setBackgroundColor(endOgColor);
+								endP = null;
+							}
+							moveNumber++;
+						}	
+						else{
+							startP.setBackgroundColor(startOgColor);
+							startP = null;
+
+							endP.setBackgroundColor(endOgColor);
+							endP = null;
+						}
+						
+					}
+				}
+			}
+		});
+
+		/* PROMOTION COMPLETE */
+		view_board.registerPromotionAction(new Dialog.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				String promoType = GUIChessBoard.values[which].toString();
+				if (isWhiteMove()) {
+					promotePiece(promoSquare, promoType, "w",
+							backend_board.WhiteP);
+				} else {
+					promotePiece(promoSquare, promoType, "b",
+							backend_board.BlackP);
+				}
+
+				backend_board.incrementMoveCtr();
+				view_board.reDraw(backend_board.board);
+
+				startP.setBackgroundColor(startOgColor);
+				startP = null;
+
+				endP.setBackgroundColor(endOgColor);
+				endP = null;
+			}
+		});
+
+		/* FORWARD */
+		view_board.registerMajorBoardActionsAL("Forward",
+				new OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						//TODO Trigger forward movement based on the list or bring to current position.
+						List<Move> moves = currGame.getMovesList();
+						if(moveNumber==moves.size()){
+							view_board.disableForward();
+						}
+						else{
+							
+							Move curr = moves.get(moveNumber);
+							
+							for(ASquare[] ar : view_board.getSquares()){
+								for(ASquare s : ar){
+									if(s.getPosition().equalsIgnoreCase(curr.getStartPos())){
+										startP = s;
+									}
+									else if(s.getPosition().equalsIgnoreCase(curr.getEndPos())){
+										endP = s;
+									}
+								}
+							}
+							
+							move();
+							backend_board.incrementMoveCtr();
+							view_board.reDraw(backend_board.board);
+							moveNumber++;
+						}
+						
+					}
+				});
+
+		/* BACKWARD */
+		view_board.registerMajorBoardActionsAL("Undo",
+				new OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						// TODO Trigger backward movement based on the list or until original board positions are found.
+						if(!backend_board.isUndoState&&ChessControl.this.currGame.getMovesList().size()>0){
+							if(startP!=null){
+								startP.resetBackgroundColor();
+								startP=null;
+							}
+							backend_board.undo();
+							ChessControl.this.currGame.getMovesList().remove(ChessControl.this.currGame.getMovesList().size()-1);
+							view_board.refreshMoveData();
+							view_board.reDraw(backend_board.board);
+							view_board.declineDraw();draw = false;
+							moveNumber--;
+						}
+					}
+				});
+
+		/* AI */
+		view_board.registerMajorBoardActionsAL("AI", new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (isWhiteMove()) {
+//					view_board.disableAI();
+//					autoMove(backend_board.WhiteP);
+					try{
+						autoMove2(backend_board.WhiteP);
+					}catch(Exception e){
+						e.printStackTrace();
+					}
+//					view_board.enableAI();
+				} else {
+//					view_board.disableAI();
+//					autoMove(backend_board.BlackP);
+					try{
+						autoMove2(backend_board.BlackP);
+					}catch(Exception e){
+						e.printStackTrace();
+					}					
+//					view_board.enableAI();
+				}
+			}
+		});
+
+		/* DRAW */
+		view_board.registerMajorBoardActionsAL("Draw", new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				/*
+				 * TODO [TESTING NEEDED] Check whether this is an offer or accept of a draw.
+				 * Keywords: +Offer Draw +Accept Draw 
+				 */
+				if (v instanceof Button) {
+					Button drawBtn = (Button) v;
+					if (drawBtn.getText().toString()
+							.equalsIgnoreCase("Offer Draw")) {
+						draw = true;
+						view_board.disableDraw();
+//						view_board.totalAI();
+					} else if (drawBtn.getText().toString()
+							.equalsIgnoreCase("Accept Draw")) {
+						currMove = new Move("", null, "", null);
+						currMove.setDrawAccepted(true);
+						ChessControl.this.currGame.getMovesList().add(currMove);
+						view_board.refreshMoveData();
+						view_board.disableBoard();
+						view_board.showSaveGame();
+						view_board.disableAI();
+						view_board.disableDraw();
+						view_board.disableResign();
+					}
+				}
+			}
+		});
+
+		/* RESIGN */
+		view_board.registerMajorBoardActionsAL("Resign", new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				currMove = new Move("", null, "", null);
+				if(moveNumber%2==0){
+					currMove.setResign(true,"Black Wins");
+				}
+				else{
+					currMove.setResign(true,"White Wins");
+				}
+
+				ChessControl.this.currGame.getMovesList().add(currMove);
+				view_board.refreshMoveData();
+				view_board.disableBoard();
+				view_board.showSaveGame();
+				view_board.disableAI();
+				view_board.disableDraw();
+				view_board.disableResign();
+			}
+		});
+	}
+
+
+	/*
+	 * PSEUDOCODE
+	 * 
+	 * Checks with the non-GUI control to make sure it's valid. Have both
+	 * references to the start button/view or end button/view. Then if the move
+	 * is valid, then you'd just take the piece from the start view and load it
+	 * into the end view. Redraw the board aka result is true.
+	 */
+	private boolean move() {
+		boolean result = false;
+		view_board.declineDraw();
+		if (startP != null && endP != null) {
+			Piece ogStartP = startP.getPiece();
+			Piece ogEndP = endP.getPiece();
+			/*
+			 * The move method will have a toString method formatting this
+			 * appropriately when it is listed. Just call Move.toString() method
+			 * on the instance.
+			 */
+			currMove = new Move(startP.getPosition(), startP.getPiece(),
+					endP.getPosition(), endP.getPiece());
+
+			//Moves appropriate side depending on whose turn it is.
+			if (backend_board.getMoveCtr() % 2 == 0) {
+				result = moveSide(backend_board.WhiteP);
+			} else {
+				result = moveSide(backend_board.BlackP);
+			}
+
+			//TODO May need separate events for checks, checkmates, and stalemates.
+			if (backend_board.isBlackCheck()) {
+				currMove.setCheck(true);
+				if (backend_board.isBlackCheckMate()) {
+					if(!oldGame){
+						view_board.showSaveGame();
+						currMove.setCheckmate(true);
+						view_board.disableAI();
+						view_board.disableDraw();
+						view_board.disableResign();
+					}
+				}
+			} else if (backend_board.isWhiteCheck()) {
+				currMove.setCheck(true);
+				if (backend_board.isWhiteCheckMate()) {
+					if(!oldGame){
+						view_board.showSaveGame();
+						currMove.setCheckmate(true);
+						view_board.disableAI();
+						view_board.disableDraw();
+						view_board.disableResign();
+					}				
+				}
+			} else {
+				if (backend_board.getMoveCtr() % 2 == 0) {
+					if (backend_board.isWhiteStaleMate()) {
+						if(!oldGame){
+							view_board.showSaveGame();
+							currMove.setStalemate(true);
+							view_board.disableAI();
+							view_board.disableDraw();
+							view_board.disableResign();
+						}
+					}
+				} else {
+					if (backend_board.isBlackStaleMate()) {
+						if(!oldGame){
+							view_board.showSaveGame();
+							currMove.setStalemate(true);
+							view_board.disableAI();
+							view_board.disableDraw();
+							view_board.disableResign();
+						}
+					}
+				}
+			}
+			
+			if(result&&!oldGame) {
+				currMove.setDrawOffered(draw);
+				view_board.enableDraw();
+				this.currGame.getMovesList().add(currMove);
+				view_board.refreshMoveData();
+				if(draw){
+					view_board.offerDraw();
+				}
+				draw = false;
+			}
+		}
+		return result;
+	}
+
+	private boolean promotePiece(ASquare currSquare, String promoType,
+			String color, ArrayList<Piece> pieces) {
+		boolean result = false;
+		for (Piece pc : pieces) {
+			if (pc.getPos().equalsIgnoreCase(currSquare.getPosition())
+					&& pc instanceof Pawn) {
+				Pawn p = (Pawn) pc;
+				String promotePiece = "Q";
+				switch (promoType.toLowerCase()) {
+				case "knight":
+					promotePiece = "N";
+					break;
+				case "bishop":
+					promotePiece = "B";
+					break;
+				case "rook":
+					promotePiece = "R";
+					break;
+				}
+				p.promote(promotePiece, color, currSquare.getPosition());
+				result = true;
+				break;
+			}
+		}
+		return result;
+	}
+
+	private boolean moveSide(ArrayList<Piece> pieces) {
+		boolean result = false;
+		for (Piece p : pieces) {
+			if (p.getPos().equalsIgnoreCase(startP.getPosition())) {
+				if (p.move(endP.getPosition())) {
+					result = true;
+					break;
+				}
+			}
+		}
+		return result;
+	}
+
+	private boolean isWhiteMove() {
+		return backend_board.getMoveCtr() % 2 == 0;
+	}
+
+	
+	private void autoMove2(ArrayList<Piece> pieces){
+		ASquare start = null;
+		ASquare end = null;
+		if(pieces.size()>0){
+			ArrayList<MoveContainer> moves = new ArrayList<MoveContainer>();
+			if(pieces.get(0).getColor().equalsIgnoreCase("w")){
+				moves = backend_board.allLegalWhiteMoves();
+			}
+			else{
+				moves = backend_board.allLegalBlackMoves();
+				
+			}
+				int rand1 = 0;
+	
+					rand1 = (int)(Math.random()*(moves.size()-1));
+			
+					int rand2 = (int)(Math.random()*(moves.get(rand1).getMoves().size()-1));
+					String moveTo = moves.get(rand1).getMoves().get(rand2);
+					
+					for(ASquare[] ar : view_board.getSquares()){
+						for(ASquare s : ar){
+							if(s.getPosition().equalsIgnoreCase(moves.get(rand1).getPiece().getPos())){
+								start = s;
+							}
+							if(s.getPosition().equalsIgnoreCase(moveTo)){
+								end = s;
+							}
+						}
+
+					}
+					start.performClick();
+//					backend_board.reCalibrate();
+//					view_board.reDraw(backend_board.board);
+//					startP = start;
+					end.performClick();
+//					Toast.makeText(view_board.getParentContext(), moveNumber+" "+backend_board.getMoveCtr(), Toast.LENGTH_SHORT).show();
+
+					if(backend_board.equals(view_board)){
+						Toast.makeText(view_board.getParentContext(), "Not equal", Toast.LENGTH_LONG).show();
+					}
+					
+					
+//					startP.resetBackgroundColor();
+//					endP.resetBackgroundColor();
+//					startP = null;
+//					endP = null;
+
+//					if(move()){
+//						String pos = endP.getPosition().substring(1);
+//						if (endP.getPiece() instanceof Pawn
+//								&& (pos.equals("8") || pos.equals("1"))) {
+//							Pawn currPawn = (Pawn) endP.getPiece();
+//							if (isWhiteMove()
+//									&& pos.equals("8")
+//									&& currPawn.getColor()
+//											.equalsIgnoreCase("w")) {
+//								promoSquare = endP;
+//								view_board.showPromotionType();
+//								//END-POINT
+//							} else if (!isWhiteMove()
+//									&& pos.equals("1")
+//									&& currPawn.getColor()
+//											.equalsIgnoreCase("b")) {
+//								promoSquare = endP;
+//								view_board.showPromotionType();
+//								//END-POINT
+//							}
+//
+//					}
+//
+//						moveNumber++;
+//						backend_board.incrementMoveCtr();
+//						view_board.reDraw(backend_board.board);
+//						startP = null;
+//						endP = null;
+//						Toast.makeText(view_board.getParentContext(), "d", Toast.LENGTH_SHORT).show();
+//				}
+				
+			
+		}
+	}
+	
+	/*
+	 * Performs a valid move at random.
+	 */
+	private void autoMove(ArrayList<Piece> pieces) {
+		int c = pieces.size();
+		here:
+		while(true){
+			if(backend_board.isWhiteCheck()||backend_board.isBlackCheck()){
+				Piece p = null;
+				for(Piece p2: pieces){
+					if(p2 instanceof King){
+						p = p2;
+					}
+				}
+				if(p!=null){
+					for(String s : p.attackingPositions()){
+						for(ASquare[] ar : view_board.getSquares()){
+							for(ASquare sq : ar){
+								if(sq.getPosition().equalsIgnoreCase(p.getPos())){
+									startP = sq;
+								}
+								if(sq.getPosition().equalsIgnoreCase(s)){
+									endP = sq;
+								}
+							}
+						}
+						if(move()){
+							moveNumber++;
+							backend_board.incrementMoveCtr();
+							view_board.reDraw(backend_board.board);
+							startP = null;
+							endP = null;
+							break here;
+
+					}
+						
+					}
+				}
+				
+				
+				
+			}
+			
+				try{
+					int rand = (int)( Math.random()*(c-1));
+					Piece p = pieces.get(rand);
+					boolean pm = false;
+					if(p instanceof Pawn){
+						pm = true;
+						String current = p.getPos();
+						int c1 = board.convert(current.substring(0,1));
+						int r1 = Integer.parseInt(current.substring(1,2))-1;
+						ArrayList<String> list = new ArrayList<String>();
+						
+						for(int i = 0;i<8;i++){
+							for( int j = 0; j<8;j++){
+								String p2 = board.let[i]+(j+1);
+								if(p.isLegal(p2)){
+									list.add(p2);
+								}
+							}
+						}
+						if(list.size()==0){
+							pm = false;
+						}
+						
+						int rand2 = (int) Math.random()*(list.size()-1);
+						for(ASquare[] ar : view_board.getSquares()){
+							for(ASquare s : ar){
+								if(s.getPosition().equalsIgnoreCase(p.getPos())){
+									startP = s;
+								}
+								if(rand2>list.size()-1){
+									continue here;
+								}
+								if(s.getPosition().equalsIgnoreCase(list.get(rand2))){
+									endP = s;
+								}
+							}
+						}
+						
+					}
+					else if(!pm){
+						if(p.attackingPositions().size()==0){
+							continue here;
+						}
+						int rand2 = (int) Math.random()*(p.attackingPositions().size()-1);
+						for(ASquare[] ar : view_board.getSquares()){
+							for(ASquare s : ar){
+								if(s.getPosition().equalsIgnoreCase(p.getPos())){
+									startP = s;
+								}
+								if(rand2>p.attackingPositions().size()-1){
+									continue here;
+								}
+								if(s.getPosition().equalsIgnoreCase(p.attackingPositions().get(rand2))){
+									endP = s;
+								}
+							}
+						}
+					}
+
+					if(move()){
+						String pos = endP.getPosition().substring(1);
+						if (endP.getPiece() instanceof Pawn
+								&& (pos.equals("8") || pos.equals("1"))) {
+							Pawn currPawn = (Pawn) endP.getPiece();
+							if (isWhiteMove()
+									&& pos.equals("8")
+									&& currPawn.getColor()
+											.equalsIgnoreCase("w")) {
+								promoSquare = endP;
+								view_board.showPromotionType();
+								//END-POINT
+							} else if (!isWhiteMove()
+									&& pos.equals("1")
+									&& currPawn.getColor()
+											.equalsIgnoreCase("b")) {
+								promoSquare = endP;
+								view_board.showPromotionType();
+								//END-POINT
+							}
+
+					}
+
+						moveNumber++;
+						backend_board.incrementMoveCtr();
+						view_board.reDraw(backend_board.board);
+						startP = null;
+						endP = null;
+						break here;
+
+				}
+				}catch (IndexOutOfBoundsException e) {
+						// TODO: handle exception
+					continue here;
+					}
+			
+			}
+		
+		}
+	
+	
+	/**
+	 * Loads a previous game.
+	 */
+	private void prepareLoadGame(){
+		oldGame = true;
+		moveNumber = 0;
+		view_board.setDefaultState();
+		view_board.disableBoard();
+		view_board.disableAI();
+		view_board.disableBackward();
+		view_board.disableDraw();
+		view_board.disableResign();
+		view_board.enableForward();
+		
+		view_board.loadMovesList(currGame.getMovesList());;
+		view_board.setUpMoveList();
+		
+	}
+	
+	public void reset(){
+		currGame = new Game();
+		moveNumber = 0;
+		startP = null;
+		endP = null;
+		promoSquare = null;
+		draw = false;
+		oldGame = false;
+		resign = false;
+		setup();
+	}
+	
+	public boolean isOldGame(){
+		return oldGame;
+	}
+}

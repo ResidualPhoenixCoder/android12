@@ -329,6 +329,7 @@ public class GUIChessBoard extends View implements IChessBoard {
 	 */
 	@Override
 	public void reDraw(String[][] s) {
+		s = b.board;
 		for (int i = 0; i < s.length; i++) {
 			for (int j = 0; j < s[1].length; j++) {
 				if (!s[i][j].equalsIgnoreCase(squares[i][j].toString())) {
@@ -527,19 +528,19 @@ public class GUIChessBoard extends View implements IChessBoard {
 
 	}
 	
-	public void totalAI(){
-		int c = 0;
-		while(!b.isWhiteCheckMate()||b.isBlackCheckMate()){
-			try{
-				controls.get("AI").performClick();
-			}
-			catch(Exception e){
-				Toast.makeText(parent, "lol", Toast.LENGTH_LONG).show();
-			}
-			if(c == 10){
-				break;
-			}
-			c++;
-		}
-	}
+//	public void totalAI(){
+//		int c = 0;
+//		while(!b.isWhiteCheckMate()||b.isBlackCheckMate()){
+//			try{
+//				controls.get("AI").performClick();
+//			}
+//			catch(Exception e){
+//				Toast.makeText(parent, "lol", Toast.LENGTH_LONG).show();
+//			}
+//			if(c == 10){
+//				break;
+//			}
+//			c++;
+//		}
+//	}
 }

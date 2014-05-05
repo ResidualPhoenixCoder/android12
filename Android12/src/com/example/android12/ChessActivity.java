@@ -44,7 +44,7 @@ public class ChessActivity extends ActionBarActivity{
 			this.chess_model.loadGames();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			Toast.makeText(this, "Error loading saved games", Toast.LENGTH_LONG).show();
+//			Toast.makeText(this, "Error loading saved games", Toast.LENGTH_LONG).show();
 		}
         this.chess_control = new ChessControl(backend_board, chess_board, chess_model);
         

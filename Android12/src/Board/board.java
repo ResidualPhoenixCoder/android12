@@ -1034,7 +1034,9 @@ public class board {
 				for(int j  = 0; j<8;j++){
 					String pos = let[j]+(i+1);
 					if(p.move(pos)){
-						mc.getMoves().add(pos);
+						if(!clone.isWhiteCheck()){
+							mc.getMoves().add(pos);
+						}
 					}
 					clone = this.boardClone();
 					p = clone.WhiteP.get(k);
@@ -1058,16 +1060,19 @@ public class board {
 		for(int k = 0;k<size;k++){
 			Piece p = clone.BlackP.get(k);
 			MoveContainer mc = new MoveContainer(BlackP.get(k));
-			moves.add(mc);
 			for(int i = 0;i<8;i++){
 				for(int j  = 0; j<8;j++){
 					String pos = let[j]+(i+1);
 					if(p.move(pos)){
-						mc.getMoves().add(pos);
-					}
+						if(!clone.isBlackCheck()){
+							mc.getMoves().add(pos);
+						}					}
 					clone = boardClone();
 					p = clone.BlackP.get(k);
 				}
+			}
+			if(mc.getMoves().size()>0){
+				moves.add(mc);
 			}
 		}
 		
@@ -1115,7 +1120,7 @@ public class board {
 		
 		for(int i = 0;i<8;i++){
 			for(int j = 0;j<8;j++){
-				if(!board[i][j].equals(o)){
+				if(!board[i][j].equals(b.board[i][j])){
 					return false;
 				}
 			}
